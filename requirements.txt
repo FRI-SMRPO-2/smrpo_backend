@@ -1,0 +1,9 @@
+django
+django-rest-auth
+djangorestframework-jwt
+django-cors-headers
+djangorestframework
+# psycopg2
+# psycopg2-binary
+# pytz
+# gunicorn

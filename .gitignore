@@ -2,3 +2,5 @@
 *.pyc
 /static
 venv
+settings.py
+.log
