@@ -5,14 +5,19 @@
 [Django docs](https://docs.djangoproject.com/en/3.0/ "Django docs")\
 [Python virtual environment](https://docs.python-guide.org/dev/virtualenvs/)
 
-#### Virtual environment
-Create virtual environment:
-1) pip install virtualenv
-2) virtualenv \<virtualenvname\> -p python3.6
-3) source <virtualenvname\>/bin/activate
-4) pip install -r requirements.txt
+**1. Create virtual enviroment and activate it.**
 
-#### Run server
-1) source <virtualenvname\>/bin/activate
-2) python manage.py migrate
-3) python manage.py runserver
+```
+$ pip install virtualenv
+$ virtualenv <virtualenvname> -p python3.6
+$ source <virtualenvname\>/bin/activate
+$ pip install -r requirements.txt
+```
+
+**2. Run Django development server.**
+
+```
+$ source <virtualenvname>/bin/activate
+$ python manage.py migrate
+$ python manage.py runserver
+```
