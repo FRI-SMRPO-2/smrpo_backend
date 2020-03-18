@@ -2,6 +2,7 @@
 [![Python 3.6](https://img.shields.io/badge/python-3.6-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 
+### Installation
 [Django docs](https://docs.djangoproject.com/en/3.0/ "Django docs")\
 [Python virtual environment](https://docs.python-guide.org/dev/virtualenvs/)
 
@@ -20,4 +21,11 @@ $ pip install -r requirements.txt
 $ source <virtualenvname>/bin/activate
 $ python manage.py migrate
 $ python manage.py runserver
+```
+### Migrations
+Everytime you create, change or delete models, you should perform next operations to create migrations in the database. 
+
+```
+$ python manage.py makemigrations
+$ python manage.py migrate
 ```

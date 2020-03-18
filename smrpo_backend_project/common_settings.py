@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+BASE_URL = 'smrpo'
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,6 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
+
+    'smrpo_backend',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth'
 ]
 
 MIDDLEWARE = [
@@ -110,12 +119,87 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.0/howto/static-files/
+# https://docs.djangoproject.com/en/2.1/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s [%(process)d] [%(levelname)s] line=%(lineno)s function=%(funcName)s %(message)s',
+            'datefmt': '%Y-%m-%d %H:%M:%S'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        }
+    },
+    'handlers': {
+        'null': {
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose'
+        }
+    },
+    'loggers': {
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django.server': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'testlogger': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        }
+    }
+}
+
+# Email backend
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = True
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
+}
