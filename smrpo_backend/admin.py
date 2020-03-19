@@ -16,3 +16,9 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'description', 'created_by', 'deadline', 'finished', 'canceled', 'created', 'updated')
     raw_id_fields = ('created_by',)
     readonly_fields = ('created', 'updated')
+
+    def save_model(self, request, obj, form, change):
+        if not obj.pk:
+            if getattr(obj, 'created_by', None) is None:
+                obj.created_by = request.user
+        super().save_model(request, obj, form, change)

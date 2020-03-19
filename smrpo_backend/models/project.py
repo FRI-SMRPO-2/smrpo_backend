@@ -10,7 +10,6 @@ class Project(models.Model):
     finished = models.DateTimeField(blank=True, null=True)
     canceled = models.DateTimeField(blank=True, null=True)
 
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-
