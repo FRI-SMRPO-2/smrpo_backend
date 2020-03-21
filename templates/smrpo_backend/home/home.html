@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block extra_js %}
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-5 pt-3">
+            <div class="col text-center">
+                <h1>Home</h1>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+        <div class="row mt-5 mb-5 pb-5">
+            <div class="col text-center">
+                <strong>All projects</strong><br />
+                {%  for project in projects %}
+                    <div>{{ project.title }}</div>
+                {% endfor %}
+                {% if not projects %}
+                    /
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row mt-5 mb-5 pb-5">
+            <div class="col text-center">
+                <strong>My projects</strong><br />
+                {%  for project in user_projects %}
+                    <div>{{ project.title }}</div>
+                {% endfor %}
+                {% if not user_projects %}
+                    /
+                {% endif %}
+            </div>
+        </div>
+        {% else %}
+            <div class="row mt-5 mb-5 pb-5">
+                <div class="col-md-3 text-center">
+                    <strong>Welcome to SMRPO project.</strong>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
