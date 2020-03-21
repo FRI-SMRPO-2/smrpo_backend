@@ -29,3 +29,4 @@ Everytime you create, change or delete models, you should perform next operation
 $ python manage.py makemigrations
 $ python manage.py migrate
 ```
+Make sure to commit & push migrations!

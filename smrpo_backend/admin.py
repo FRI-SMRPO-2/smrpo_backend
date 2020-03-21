@@ -31,8 +31,14 @@ class ProjectAdmin(admin.ModelAdmin):
 
 
 @admin.register(project_member.ProjectMember)
-class TaskAdmin(admin.ModelAdmin):
+class ProjectMemberAdmin(admin.ModelAdmin):
     list_filter = ('created', 'updated')
     raw_id_fields = ('project', 'user')
     readonly_fields = ('created', 'updated')
     search_fields = ('title',)
+
+
+@admin.register(project_member.ProjectMemberRole)
+class ProjectMemberRoleAdmin(admin.ModelAdmin):
+    list_display = ('role', 'description')
+    search_fields = ('role', 'description',)
