@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from smrpo_backend.models.project_user import ProjectUser
+from smrpo.models.project_user import ProjectUser
 
 
 class Project(models.Model):

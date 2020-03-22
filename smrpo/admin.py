@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from smrpo_backend.models import task, project, project_user
+from smrpo.models import task, project, project_user
 
 
 @admin.register(task.Task)

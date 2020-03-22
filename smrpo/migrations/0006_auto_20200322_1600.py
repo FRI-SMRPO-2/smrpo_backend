@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('smrpo_backend', '0005_auto_20200321_1517'),
+        ('smrpo', '0005_auto_20200321_1517'),
     ]
 
     operations = [
@@ -28,6 +28,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='project',
             name='users',
-            field=models.ManyToManyField(related_name='projects', through='smrpo_backend.ProjectUser', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(related_name='projects', through='smrpo.ProjectUser', to=settings.AUTH_USER_MODEL),
         ),
     ]

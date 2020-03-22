@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('smrpo_backend', '0002_auto_20200319_2241'),
+        ('smrpo', '0002_auto_20200319_2241'),
     ]
 
     operations = [
@@ -26,13 +26,13 @@ class Migration(migrations.Migration):
                 ('role', models.CharField(max_length=60)),
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='smrpo_backend.Project')),
+                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='smrpo.Project')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AddField(
             model_name='project',
             name='members',
-            field=models.ManyToManyField(related_name='projects', through='smrpo_backend.ProjectMember', to=settings.AUTH_USER_MODEL),
+            field=models.ManyToManyField(related_name='projects', through='smrpo.ProjectMember', to=settings.AUTH_USER_MODEL),
         ),
     ]

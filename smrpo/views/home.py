@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.views.generic.base import View
 
-from smrpo_backend.models.project import Project
+from smrpo.models.project import Project
 
 
 class HomeView(View):
@@ -14,4 +14,4 @@ class HomeView(View):
             context["projects"] = Project.objects.all()
             context["user_projects"] = Project.objects.filter(users=user)
 
-        return render(request, "smrpo_backend/home/home.html", context)
+        return render(request, "smrpo/home/home.html", context)

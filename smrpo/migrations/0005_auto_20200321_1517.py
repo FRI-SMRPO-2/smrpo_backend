@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('smrpo_backend', '0004_auto_20200321_1514'),
+        ('smrpo', '0004_auto_20200321_1514'),
     ]
 
     operations = [
