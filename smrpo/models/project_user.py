@@ -6,12 +6,14 @@ class ProjectUserRole(models.Model):
     title = models.CharField(max_length=50)
     description = models.CharField(max_length=255, blank=True, null=True)
 
+    def __str__(self):
+        return self.title
+
 
 class ProjectUser(models.Model):
     """
         Intermediate table for many to many field connecting projects with users.
     """
-    title = models.CharField(max_length=60)
     role = models.ForeignKey(ProjectUserRole, on_delete=models.DO_NOTHING)
 
     project = models.ForeignKey('Project', on_delete=models.CASCADE)

@@ -186,7 +186,7 @@ LOGGING = {
     }
 }
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # Email backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

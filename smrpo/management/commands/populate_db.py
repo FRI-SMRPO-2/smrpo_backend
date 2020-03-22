@@ -10,33 +10,33 @@ projects = {
     "Project 2": "Description is this.",
 }
 
-roles = {
-    "project_manager": "Project manager",
-    "product_manager": "Product manager",
-    "developer": "Developer",
-    "methodology_master": "Methodology master"
-}
+roles = [
+    ["project_manager", "Project manager"],
+    ["product_manager", "Product manager"],
+    ["developer", "Developer"],
+    ["methodology_master", "Methodology master"]
+]
 
-priorities = {
+priorities = [
     "must have",
     "should have",
     "could have",
     "won't have this time"
-}
+]
 
 
 class Command(BaseCommand):
     def handle(self, **options):
         admin = User.objects.get(username='admin')
 
-        for project, description in projects.items():
-            Project.objects.create(
-                title=project,
-                description=description,
-                created_by=admin
-            )
+        # for project, description in projects.items():
+        #     Project.objects.create(
+        #         title=project,
+        #         description=description,
+        #         created_by=admin
+        #     )
 
-        for role, title in projects.items():
+        for role in roles:
             ProjectUserRole.objects.create(
-                title=title
+                title=role[1]
             )
