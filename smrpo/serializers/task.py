@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from crm.models.task import Task
+from smrpo.models.task import Task
 
 
 class TaskSerializer(serializers.ModelSerializer):

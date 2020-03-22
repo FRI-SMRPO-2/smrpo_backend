@@ -3,7 +3,7 @@ from django.db import models
 
 
 class ProjectUserRole(models.Model):
-    role = models.CharField(max_length=50)
+    title = models.CharField(max_length=50)
     description = models.CharField(max_length=255, blank=True, null=True)
 
 
