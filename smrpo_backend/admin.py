@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from smrpo_backend.models import task, project, project_member
+from smrpo_backend.models import task, project, project_user
 
 
 @admin.register(task.Task)
@@ -11,8 +11,8 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-class ProjectMembersInline(admin.TabularInline):
-    model = project_member.ProjectMember
+class ProjectUsersInline(admin.TabularInline):
+    model = project_user.ProjectUser
     extra = 1  # how many rows to show
 
 
@@ -21,7 +21,7 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'description', 'created_by', 'deadline', 'finished', 'canceled', 'created', 'updated')
     raw_id_fields = ('created_by',)
     readonly_fields = ('created', 'updated')
-    inlines = (ProjectMembersInline,)
+    inlines = (ProjectUsersInline,)
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
@@ -30,15 +30,15 @@ class ProjectAdmin(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
-@admin.register(project_member.ProjectMember)
-class ProjectMemberAdmin(admin.ModelAdmin):
+@admin.register(project_user.ProjectUser)
+class ProjectUserAdmin(admin.ModelAdmin):
     list_filter = ('created', 'updated')
     raw_id_fields = ('project', 'user')
     readonly_fields = ('created', 'updated')
     search_fields = ('title',)
 
 
-@admin.register(project_member.ProjectMemberRole)
-class ProjectMemberRoleAdmin(admin.ModelAdmin):
+@admin.register(project_user.ProjectUserRole)
+class ProjectUserRoleAdmin(admin.ModelAdmin):
     list_display = ('role', 'description')
     search_fields = ('role', 'description',)

@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.db import models
 
-from smrpo_backend.models.project_member import ProjectMember
+from smrpo_backend.models.project_user import ProjectUser
 
 
 class Project(models.Model):
@@ -12,7 +12,7 @@ class Project(models.Model):
     finished = models.DateTimeField(blank=True, null=True)
     canceled = models.DateTimeField(blank=True, null=True)
 
-    members = models.ManyToManyField(settings.AUTH_USER_MODEL, through=ProjectMember, related_name='projects')
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=ProjectUser, related_name='projects')
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_projects')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)

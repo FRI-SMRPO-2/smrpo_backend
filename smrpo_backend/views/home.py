@@ -12,6 +12,6 @@ class HomeView(View):
 
         if not user.is_anonymous:
             context["projects"] = Project.objects.all()
-            context["user_projects"] = Project.objects.filter(members=user)
+            context["user_projects"] = Project.objects.filter(users=user)
 
         return render(request, "smrpo_backend/home/home.html", context)
