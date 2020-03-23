@@ -3,11 +3,10 @@ from django.db import models
 
 
 class ProjectUserRole(models.Model):
-    title = models.CharField(max_length=50)
     description = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
-        return self.title
+        return self.description
 
 
 class ProjectUser(models.Model):

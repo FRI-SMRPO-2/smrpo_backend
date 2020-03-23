@@ -41,5 +41,5 @@ class ProjectUserAdmin(admin.ModelAdmin):
 
 @admin.register(project_user.ProjectUserRole)
 class ProjectUserRoleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description')
-    search_fields = ('title', 'description',)
+    list_display = ('id', 'description',)
+    search_fields = ('description',)

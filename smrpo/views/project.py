@@ -23,6 +23,17 @@ class ProjectsView(APIView):
 
         return JsonResponse(projects, safe=False)
 
+    def post(self, request):
+        data = request.data
+
+        # check if all fields are set
+        name = data['name']
+
+        if data['users'] and len(data['users']):
+            pass
+
+        return JsonResponse("test", safe=False)
+
 
 class ProjectView(APIView):
     """
