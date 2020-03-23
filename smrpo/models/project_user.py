@@ -21,3 +21,13 @@ class ProjectUser(models.Model):
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    @property
+    def api_data(self):
+        return dict(
+            id=self.id,
+            role=self.role.title,
+            name=self.user.get_full_name(),
+            username=self.user.username,
+            email=self.user.email,
+        )

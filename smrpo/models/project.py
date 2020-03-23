@@ -19,3 +19,17 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def api_data(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+            description=self.description,
+            users=[user.api_data for user in self.projectuser_set.all()],
+            deadline=self.deadline,
+            finished=self.finished,
+            canceled=self.canceled,
+            created=self.created,
+            updated=self.updated,
+        )
