@@ -9,8 +9,16 @@ class ProjectsView(APIView):
         Return user's projects.
     """
     def get(self, request):
+        role = request.GET.get('role')
         user = request.user
+
+        # Get user's projects
         projects = Project.objects.filter(users=user)
+
+        # If role parameter was passed return projects that match provided user role.
+        if role:
+            projects = projects.filter(projectuser__role__title=role)
+
         projects = [project.api_data for project in projects]
 
         return JsonResponse(projects, safe=False)
