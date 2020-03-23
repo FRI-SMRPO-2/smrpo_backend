@@ -1,30 +1,34 @@
-from django.http import JsonResponse
-from rest_framework import viewsets, permissions
+from django.http import JsonResponse, Http404, HttpResponseBadRequest
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
-from smrpo.serializers.project import ProjectSerializer
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectsView(APIView):
     """
-        This viewset automatically provides `list`, `create`, `retrieve`,
-        `update` and `destroy` actions.
-        """
-    queryset = Project.objects.all()
-    serializer_class = ProjectSerializer
-    permission_classes = [permissions.IsAuthenticated]
+        Return user's projects.
+    """
+    def get(self, request):
+        user = request.user
+        projects = Project.objects.filter(users=user)
+        projects = [project.api_data for project in projects]
+
+        return JsonResponse(projects, safe=False)
 
 
 class ProjectView(APIView):
     """
-        Return user's projects.
+        Return user's project by id.
     """
-    def get(self, request, format=None):
-        """
-        Return a list of all users.
-        """
+    @staticmethod
+    def get_object(pk, user):
+        try:
+            return Project.objects.get(pk=pk, users=user)
+        except Project.DoesNotExist:
+            raise Http404
+
+    def get(self, request, pk):
         user = request.user
-        projects = Project.objects.filter(users=user)
-        projects = [project.api_data for project in projects]
-        return JsonResponse(projects, safe=False)
+        project = self.get_object(pk, user)
+
+        return JsonResponse(project.api_data, safe=False)
