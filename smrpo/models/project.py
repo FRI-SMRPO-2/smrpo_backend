@@ -5,7 +5,7 @@ from smrpo.models.project_user import ProjectUser
 
 
 class Project(models.Model):
-    name = models.CharField(max_length=60)
+    name = models.CharField(max_length=60, unique=True)
     documentation = models.TextField(null=True, blank=True)
 
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=ProjectUser, related_name='projects')
