@@ -18,7 +18,7 @@ class ProjectUsersInline(admin.TabularInline):
 
 @admin.register(project.Project)
 class ProjectAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title', 'description', 'created_by', 'deadline', 'finished', 'canceled', 'created', 'updated')
+    list_display = ('id', 'name', 'documentation', 'created_by', 'created', 'updated')
     raw_id_fields = ('created_by',)
     readonly_fields = ('created', 'updated')
     inlines = (ProjectUsersInline,)
