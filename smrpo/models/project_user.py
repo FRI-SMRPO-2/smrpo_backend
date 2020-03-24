@@ -8,6 +8,13 @@ class ProjectUserRole(models.Model):
     def __str__(self):
         return "{}".format(self.title)
 
+    @property
+    def api_data(self):
+        return dict(
+            id=self.id,
+            title=self.title,
+        )
+
 
 class ProjectUser(models.Model):
     """
