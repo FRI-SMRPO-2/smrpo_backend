@@ -76,7 +76,7 @@ class ProjectsView(APIView):
 
         try:
             for user_role in user_roles:
-                pu = ProjectUser(user=user_role['user_id'], role=user_role['role_id'], project=p)
+                pu = ProjectUser(user_id=user_role['user_id'], role_id=user_role['role_id'], project=p)
                 pu.save()
         except Exception as e:
             print(e)  # TODO replace print with logger
