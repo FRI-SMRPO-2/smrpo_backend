@@ -29,12 +29,12 @@ class Command(BaseCommand):
     def handle(self, **options):
         admin = User.objects.get(username='admin')
 
-        # for project, description in projects.items():
-        #     Project.objects.create(
-        #         title=project,
-        #         description=description,
-        #         created_by=admin
-        #     )
+        for project, description in projects.items():
+            Project.objects.create(
+                title=project,
+                description=description,
+                created_by=admin
+            )
 
         for role in roles:
             ProjectUserRole.objects.create(
