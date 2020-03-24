@@ -22,7 +22,7 @@ class ProjectUser(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{} ({})".format(self.user.get_full_name(), self.role)
+        return "{} ({})".format(self.user.username, self.role)
 
     @property
     def api_data(self):
