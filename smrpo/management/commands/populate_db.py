@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         for project, description in projects.items():
             Project.objects.create(
-                title=project,
+                name=project,
                 description=description,
                 created_by=admin
             )
