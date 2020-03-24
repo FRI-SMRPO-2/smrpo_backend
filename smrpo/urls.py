@@ -3,6 +3,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 
 from smrpo.views.home import HomeView
 from smrpo.views.project import ProjectView, ProjectsView
+from smrpo.views.project_role import ProjectRolesView
 from smrpo.views.user import UsersView
 
 urlpatterns = [
@@ -15,4 +16,7 @@ urlpatterns = [
     # Project
     path('project/', ProjectsView.as_view(), name="projects"),
     path('project/<int:pk>/', ProjectView.as_view(), name="project"),
+
+    # Project roles
+    path('project_role/', ProjectRolesView.as_view(), name="project_roles")
 ]
