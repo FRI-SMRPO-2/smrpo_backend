@@ -41,7 +41,7 @@ class ProjectsView(APIView):
                 if user_id in users:
                     return 'Uporabnik ima lahko samo eno vlogo.'
 
-                users.add(user_role['user_id'])
+                users.add(user_id)
         except Exception as e:
             print(e)  # TODO replace print with logger
             return 'Zgodila se je napaka.'
