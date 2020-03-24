@@ -1,0 +1,31 @@
+from django.contrib.auth.models import User
+from django.db.models import Q
+from django.http import JsonResponse
+from rest_framework.views import APIView
+
+
+class UsersView(APIView):
+    """
+        Return a list of all users.
+    """
+    def get(self, request):
+        search = request.GET.get('search')
+
+        # Get users
+        users = User.objects.all()
+
+        if search:
+            users = users.filter(
+                Q(first_name__icontains=search) | Q(last_name__icontains=search) | Q(username__icontains=search) | Q(email__icontains=search)
+            )
+
+        users_list = []
+        for user in users:
+            users_list.append(dict(
+                id=user.id,
+                name=user.get_full_name(),
+                username=user.username,
+                email=user.email
+            ))
+
+        return JsonResponse(users_list, safe=False)
