@@ -1,5 +1,5 @@
 from django.db import IntegrityError
-from django.http import JsonResponse, Http404, HttpResponseBadRequest, HttpResponse
+from django.http import JsonResponse, Http404, HttpResponse
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
@@ -27,52 +27,59 @@ class ProjectsView(APIView):
 
     @staticmethod
     def validate_user_roles_list(user_roles):
-        if not user_roles or not isinstance(user_roles, list) or len(user_roles) == 0:
-            return 'Podaj seznam uporabnikov'
+        if not user_roles:
+            return 'Podaj seznam uporabnikov.'
 
         users = set()
-        for user_role in user_roles:
-            if len(user_role) != 2 or 'user_id' not in user_role or 'role_id' not in user_role:
-                return 'Ključi v seznamu uporabnikov morajo biti id in role_id'
+        try:
+            for user_role in user_roles:
+                user_id = user_role.get('user_id')
+                role_id = user_role.get('role_id')
+                if user_id is None or role_id is None:
+                    return 'Neveljaven uporabnik ali vloga.'
 
-            if not isinstance(user_role['user_id'], int) or not isinstance(user_role['role_id'], int):
-                return 'Ključa id in role_id morata biti števili'
+                if user_id in users:
+                    return 'Uporabnik ima lahko samo eno vlogo.'
 
-            if user_role['user_id'] in users:
-                return 'Uporabnik ima lahko samo eno vlogo'
-
-            users.add(user_role['user_id'])
+                users.add(user_role['user_id'])
+        except Exception as e:
+            print(e)  # TODO replace print with logger
+            return 'Zgodila se je napaka.'
 
         return None
 
     def post(self, request):
-        data = request.data
         current_user = request.user
+        if not current_user.is_superuser:
+            return HttpResponse('User unauthorized.', status=401)
 
-        # extract fields from request
+        data = request.data
+
+        # Extract fields from request
         name = data.get('name')
-        user_roles = data.get('user_roles', [])
+        user_roles = data.get('user_roles')
 
-        # check if all fields are set and valid
-        message = self.validate_user_roles_list(user_roles)
-        if message is not None:
-            return JsonResponse({'message': message}, status=400)
+        # Check if all fields are set and valid
+        error = self.validate_user_roles_list(user_roles)
+
+        if error:
+            return JsonResponse({'message': error}, status=400)
 
         if not name:
             return JsonResponse({'message': 'Ime ni nastavljeno'}, status=400)
 
-        # create a project
+        # Create a project
         try:
-            p = Project(name=name, created_by=current_user, )
-            p.save()
+            p = Project.objects.create(name=name, created_by=current_user)
         except IntegrityError:
             return JsonResponse({'message': 'Projekt s tem imenom že obstaja'}, status=400)
 
         try:
             for user_role in user_roles:
-                pu = ProjectUser(user_id=user_role['user_id'], role_id=user_role['role_id'], project_id=p.id)
+                pu = ProjectUser(user=user_role['user_id'], role=user_role['role_id'], project=p)
                 pu.save()
-        except:
+        except Exception as e:
+            print(e)  # TODO replace print with logger
             p.delete()
             return JsonResponse({'message': 'Napaka pri dodajanju uporabnikov v projekt'}, status=400)
 

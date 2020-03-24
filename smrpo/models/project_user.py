@@ -28,6 +28,9 @@ class ProjectUser(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ('project', 'user')
+
     def __str__(self):
         return "{} ({})".format(self.user.username, self.role)
 
