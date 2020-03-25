@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from smrpo.models import task, project, project_user
+from smrpo.models import task, project, project_user, sprint
 
 
 @admin.register(task.Task)
@@ -43,3 +43,9 @@ class ProjectUserAdmin(admin.ModelAdmin):
 class ProjectUserRoleAdmin(admin.ModelAdmin):
     list_display = ('id', 'title',)
     search_fields = ('title',)
+
+
+@admin.register(sprint.Sprint)
+class SprintAdmin(admin.ModelAdmin):
+    list_display = ('start_date', 'end_date', 'expected_speed', 'project',)
+    search_fields = ('start_date', 'end_date', 'expected_speed', 'project',)
