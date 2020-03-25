@@ -1,9 +1,13 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
+from django.utils.dateparse import parse_date
 
 from smrpo.models.project import Project
+from smrpo.models.task import Task
 
 
 class Sprint(models.Model):
@@ -16,17 +20,6 @@ class Sprint(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-    def clean(self):
-        super().clean()
-        if self.start_date < timezone.now().date():
-            raise ValidationError("Začetni datum ne sme biti v preteklosti")
-
-        if not self.start_date <= self.end_date:
-            raise ValidationError("Končni datum ne sme biti pred začetnim")
-
-        if self.expected_speed < 0.0:
-            raise ValidationError("Hitrost sprinta mora biti večja od 0")
-
     @property
     def api_data(self):
         return dict(
@@ -38,3 +31,19 @@ class Sprint(models.Model):
             created=self.created,
             updated=self.updated,
         )
+
+
+@receiver(pre_save, sender=Sprint)
+def task_pre_save(sender, instance, *args, **kwargs):
+    start = instance.start_date
+    end = instance.end_date
+    speed = instance.expected_speed
+
+    if start < timezone.now().date():
+        raise ValueError("Začetni datum ne sme biti v preteklosti")
+
+    if not start <= end:
+        raise ValueError("Končni datum ne sme biti pred začetnim")
+
+    if speed < 0.0:
+        raise ValueError("Hitrost sprinta mora biti večja od 0")

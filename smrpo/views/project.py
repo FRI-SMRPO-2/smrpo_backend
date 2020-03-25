@@ -83,7 +83,7 @@ class ProjectsView(APIView):
             p.delete()
             return JsonResponse({'message': 'Napaka pri dodajanju uporabnikov v projekt'}, status=400)
 
-        return JsonResponse(p.api_data, safe=False)
+        return JsonResponse(p.api_data, safe=False, status=201)
 
 
 class ProjectView(APIView):
