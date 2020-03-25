@@ -47,5 +47,5 @@ class ProjectUserRoleAdmin(admin.ModelAdmin):
 
 @admin.register(sprint.Sprint)
 class SprintAdmin(admin.ModelAdmin):
-    list_display = ('start_date', 'end_date', 'expected_speed', 'project',)
+    list_display = ('id', 'start_date', 'end_date', 'expected_speed', 'project',)
     search_fields = ('start_date', 'end_date', 'expected_speed', 'project',)

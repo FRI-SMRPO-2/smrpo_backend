@@ -9,6 +9,5 @@ class ProjectRolesView(APIView):
         Return project roles
     """
     def get(self, request):
-        project_roles = ProjectUserRole.objects.all()
-        project_roles = [project_role.api_data for project_role in project_roles]
+        project_roles = list(ProjectUserRole.objects.all().values())
         return JsonResponse(project_roles, safe=False)

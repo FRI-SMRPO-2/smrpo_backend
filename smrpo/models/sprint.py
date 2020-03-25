@@ -14,6 +14,7 @@ class Sprint(models.Model):
     expected_speed = models.FloatField()
     project = models.ForeignKey(Project, on_delete=models.PROTECT, related_name='sprints')
 
+    # Maybe change FK to ProjectUser if needed
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_sprints')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -35,20 +36,17 @@ class Sprint(models.Model):
 def task_pre_save(sender, instance, *args, **kwargs):
     start = instance.start_date
     end = instance.end_date
-    speed = instance.expected_speed
 
     if start < timezone.now().date():
-        raise ValueError('Začetni datum ne sme biti v preteklosti')
+        raise ValueError('Začetni datum ne sme biti v preteklosti.')
 
     if not start <= end:
-        raise ValueError('Končni datum ne sme biti pred začetnim')
+        raise ValueError('Končni datum ne sme biti pred začetnim.')
 
-    if speed < 0.0:
-        raise ValueError('Hitrost sprinta mora biti večja od 0')
+    if instance.expected_speed <= 0.0:
+        raise ValueError('Hitrost sprinta mora biti večja od 0.')
 
     # check if sprints overlap
-    sprints = Sprint.objects.filter(project_id=instance.project_id)
-    for sprint in sprints:
-        if sprint.start_date <= end and start <= sprint.end_date:
-            raise ValidationError('Datum sprinta se prekriva z že obstoječim sprintom')
-
+    overlapping_sprints = Sprint.objects.filter(project=instance.project, start_date__lte=end, end_date__gte=start).exists()
+    if overlapping_sprints:
+            raise ValidationError('Datum sprinta se prekriva z že obstoječim.')
