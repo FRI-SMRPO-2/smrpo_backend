@@ -24,6 +24,9 @@ class Sprint(models.Model):
         if not self.start_date <= self.end_date:
             raise ValidationError("Končni datum ne sme biti pred začetnim")
 
+        if self.expected_speed < 0.0:
+            raise ValidationError("Hitrost sprinta mora biti večja od 0")
+
     @property
     def api_data(self):
         return dict(
