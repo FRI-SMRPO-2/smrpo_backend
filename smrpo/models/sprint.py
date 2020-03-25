@@ -4,10 +4,8 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
-from django.utils.dateparse import parse_date
 
 from smrpo.models.project import Project
-from smrpo.models.task import Task
 
 
 class Sprint(models.Model):
@@ -40,10 +38,17 @@ def task_pre_save(sender, instance, *args, **kwargs):
     speed = instance.expected_speed
 
     if start < timezone.now().date():
-        raise ValueError("Začetni datum ne sme biti v preteklosti")
+        raise ValueError('Začetni datum ne sme biti v preteklosti')
 
     if not start <= end:
-        raise ValueError("Končni datum ne sme biti pred začetnim")
+        raise ValueError('Končni datum ne sme biti pred začetnim')
 
     if speed < 0.0:
-        raise ValueError("Hitrost sprinta mora biti večja od 0")
+        raise ValueError('Hitrost sprinta mora biti večja od 0')
+
+    # check if sprints overlap
+    sprints = Sprint.objects.filter(project_id=instance.project_id)
+    for sprint in sprints:
+        if sprint.start_date <= end and start <= sprint.end_date:
+            raise ValidationError('Datum sprinta se prekriva z že obstoječim sprintom')
+
