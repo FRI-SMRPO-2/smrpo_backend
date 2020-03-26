@@ -43,7 +43,7 @@ class SprintsView(APIView):
         ).exists()
 
         if not user.is_superuser and not user_is_methodology_master:
-            return HttpResponse('User unauthorized.', status=401)
+            return HttpResponse('User is forbidden to access this resource.', status=403)
 
         start_date = data.get('start_date')
         end_date = data.get('end_date')

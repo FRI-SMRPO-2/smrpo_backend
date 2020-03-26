@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
+from smrpo.forms import UserCreateForm
 
 
 # TODO only admin and methodology master can access this view
@@ -32,11 +33,31 @@ class UsersView(APIView):
         return JsonResponse(users_list, safe=False)
 
     def post(self, request):
-        # TODO implement user create
-        user = request.user
-        if user.is_superuser:
-            pass
-        return JsonResponse(dict(), status=403)
+        if not request.user.is_superuser:
+            return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        form = UserCreateForm(request.data)
+        if form.is_valid():
+            user = form.save()
+            return JsonResponse(
+                dict(
+                    id=user.id,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    full_name=user.get_full_name(),
+                    username=user.username,
+                    email=user.email,
+                    last_login=user.last_login,
+                    is_superuser=user.is_superuser
+                ),
+                status=201
+            )
+
+        errors = dict()
+        for key, error in form.errors.items():
+            errors[key] = list(error)
+
+        return JsonResponse(errors, status=400)
 
 
 class AuthUserInfoView(APIView):

@@ -36,7 +36,7 @@ class ProjectsView(APIView):
     def post(self, request):
         current_user = request.user
         if not current_user.is_superuser:
-            return HttpResponse('User unauthorized.', status=401)
+            return HttpResponse('User is forbidden to access this resource.', status=403)
 
         data = request.data
 
