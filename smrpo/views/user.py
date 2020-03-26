@@ -5,12 +5,12 @@ from rest_framework.views import APIView
 from smrpo.forms import UserCreateForm
 
 
-# TODO only admin and methodology master can access this view
 class UsersView(APIView):
     """
         Return a list of all users.
     """
     def get(self, request):
+        # TODO only admin and methodology master can access this view
         search = request.GET.get('search')
 
         # Get users
