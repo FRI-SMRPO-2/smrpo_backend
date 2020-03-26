@@ -29,3 +29,23 @@ class UsersView(APIView):
             ))
 
         return JsonResponse(users_list, safe=False)
+
+
+class AuthUserInfoView(APIView):
+    """
+        Return authenticated user's info.
+    """
+    def get(self, request):
+        user = request.user
+
+        return JsonResponse(dict(
+                id=user.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                full_name=user.get_full_name(),
+                username=user.username,
+                email=user.email,
+                last_login=user.last_login,
+                is_superuser=user.is_superuser
+            )
+        )
