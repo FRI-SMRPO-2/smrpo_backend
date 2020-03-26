@@ -25,5 +25,4 @@ urlpatterns = [
 
     # Project roles
     path('project_role/', ProjectRolesView.as_view(), name="project_roles"),
-
 ]

@@ -6,7 +6,7 @@ from smrpo.models.project_user import ProjectUserRole
 
 class ProjectRolesView(APIView):
     """
-        Return project roles
+        Return all project roles
     """
     def get(self, request):
         project_roles = list(ProjectUserRole.objects.all().values())

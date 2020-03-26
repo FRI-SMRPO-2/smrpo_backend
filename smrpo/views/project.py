@@ -1,52 +1,37 @@
 from django.db import IntegrityError
-from django.http import JsonResponse, Http404, HttpResponse
+from django.http import JsonResponse, HttpResponse
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
-from smrpo.models.project_user import ProjectUser
+from smrpo.models.project_user import ProjectUser, ProjectUserRole
 
 
 class ProjectsView(APIView):
     """
         Return user's projects.
     """
+
     def get(self, request):
         role = request.GET.get('role')
         user = request.user
 
-        # Get user's projects
-        projects = Project.objects.filter(users=user)
+        projects = Project.objects.all()
+
+        # Get user's projects, only superuser can view all projects
+        if not user.is_superuser:
+            projects = projects.filter(users=user)
 
         # If role parameter was passed return projects that match provided user role.
         if role:
             projects = projects.filter(projectuser__role__title=role)
 
-        projects = [project.api_data for project in projects]
+        if request.GET.get('names'):
+            projects = list(projects.values('id', 'name'))
+        else:
+            projects = [project.api_data for project in projects]
 
         return JsonResponse(projects, safe=False)
-
-    @staticmethod
-    def validate_user_roles_list(user_roles):
-        if not user_roles:
-            return 'Podaj seznam uporabnikov.'
-
-        users = set()
-        try:
-            for user_role in user_roles:
-                user_id = user_role.get('user_id')
-                role_id = user_role.get('role_id')
-                if user_id is None or role_id is None:
-                    return 'Neveljaven uporabnik ali vloga.'
-
-                if user_id in users:
-                    return 'Uporabnik ima lahko samo eno vlogo.'
-
-                users.add(user_id)
-        except Exception as e:
-            print(e)  # TODO replace print with logger
-            return 'Zgodila se je napaka.'
-
-        return None
 
     def post(self, request):
         current_user = request.user
@@ -60,7 +45,7 @@ class ProjectsView(APIView):
         user_roles = data.get('user_roles')
 
         # Check if all fields are set and valid
-        error = self.validate_user_roles_list(user_roles)
+        error = ProjectUserRole.validate_user_roles(user_roles)
 
         if error:
             return JsonResponse({'message': error}, status=400)
@@ -90,15 +75,12 @@ class ProjectView(APIView):
     """
         Return user's project by id.
     """
-    @staticmethod
-    def get_object(pk, user):
-        try:
-            return Project.objects.get(pk=pk, users=user)
-        except Project.DoesNotExist:
-            raise Http404
-
     def get(self, request, pk):
         user = request.user
-        project = self.get_object(pk, user)
+        # Check if user is superuser or if user is project user.
+        if user.is_superuser:
+            project = get_object_or_404(Project, pk=pk)
+        else:
+            project = get_object_or_404(Project, pk=pk, users=user)
 
         return JsonResponse(project.api_data, safe=False)

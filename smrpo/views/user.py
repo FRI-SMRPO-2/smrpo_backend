@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 
 
+# TODO only admin and methodology master can access this view
 class UsersView(APIView):
     """
         Return a list of all users.
@@ -29,6 +30,13 @@ class UsersView(APIView):
             ))
 
         return JsonResponse(users_list, safe=False)
+
+    def post(self, request):
+        # TODO implement user create
+        user = request.user
+        if user.is_superuser:
+            pass
+        return JsonResponse(dict(), status=403)
 
 
 class AuthUserInfoView(APIView):
