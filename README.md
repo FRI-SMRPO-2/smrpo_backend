@@ -178,3 +178,46 @@ Napaka se vrne v naslednjih primerih:
 3. Hitrost sprinta je manjša ali enaka 0.
 4. Dodani sprint se prekriva z že obstoječimi sprinti.
 5. Uporabnik nima zadostnih privilegijev (mora biti skrbnik metodologije).
+
+### GET /api/project/{project_id}/sprint/{sprint_id}
+
+Pridobi sprint z ID-jem {sprint_id}, ki priprada projektu z ID-jem {project_id}.
+
+```json
+{
+    "id": 16,
+    "start_date": "2020-03-25",
+    "end_date": "2020-03-29",
+    "expected_speed": 1.9,
+    "project_id": 3,
+    "created": "2020-03-25T18:45:14.733Z",
+    "updated": "2020-03-25T19:47:26.028Z"
+}
+```
+
+### GET /api/project/{project_id}/sprint
+
+Pridobi vse sprinte, ki pripradajo projektu z ID-jem {project_id}.
+
+```json
+[
+    {
+        "id": 16,
+        "start_date": "2020-03-25",
+        "end_date": "2020-03-29",
+        "expected_speed": 1.9,
+        "project_id": 3,
+        "created": "2020-03-25T18:45:14.733Z",
+        "updated": "2020-03-25T19:47:26.028Z"
+    },
+    {
+        "id": 20,
+        "start_date": "2021-03-25",
+        "end_date": "2021-03-27",
+        "expected_speed": 1.9,
+        "project_id": 3,
+        "created": "2020-03-25T20:03:28.463Z",
+        "updated": "2020-03-25T20:03:28.463Z"
+    }
+]
+```
