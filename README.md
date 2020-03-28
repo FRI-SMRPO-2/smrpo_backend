@@ -57,6 +57,7 @@ Napaka se vrne v naslednjih primerih:
 2. Projekt s tem imenom že obstaja.
 3. V seznamu uporabnikov in vlog se nek zapis podvoji.
 4. V seznamu uporabnikov in vlog je podan uporabnik ali vloga, ki ne obstaja.
+5. Uporabnik nima zadostnih privilegijev (mora biti administrator).
 
 ### GET /api/project
 
@@ -113,6 +114,8 @@ Vrne vse projekte v podatkovni bazi.
 ]
 ```
 
+V primeru, da ne obstaja noben projekt, se vrne prazen seznam.
+
 ### GET /api/project/{id}
 
 Vrne projekt z ID-jem {id}.
@@ -149,3 +152,29 @@ Vrne projekt z ID-jem {id}.
     "updated": "2020-03-23T20:04:27.204Z"
 }
 ```
+
+V primeru, da projekt s tem ID-jem ne obstaja, se vrne napaka.
+
+## Sprinti
+
+### POST /api/project/{project_id}/sprint
+
+V projekt z id-jem {project_id} se doda nov sprint.
+
+Telo zahtevka:
+
+```json
+{
+    "start_date": "2020-03-28",
+    "end_date": "2020-03-29",
+    "expected_speed": 1.9
+}
+```
+
+Napaka se vrne v naslednjih primerih:
+
+1. Začetni datum je v preteklosti.
+2. Končni datum je pred začetnim.
+3. Hitrost sprinta je manjša ali enaka 0.
+4. Dodani sprint se prekriva z že obstoječimi sprinti.
+5. Uporabnik nima zadostnih privilegijev (mora biti skrbnik metodologije).
