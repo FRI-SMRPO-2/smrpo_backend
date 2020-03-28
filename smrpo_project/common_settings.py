@@ -221,8 +221,8 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     'http://127.0.0.1:8000',
     'http://127.0.0.1:8080',
     'http://127.0.0.1',
-)
+]
