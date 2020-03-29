@@ -60,7 +60,7 @@ class StoryAdmin(admin.ModelAdmin):
 
 @admin.register(story.StoryPriority)
 class StoryPriorityAdmin(admin.ModelAdmin):
-    list_display = ('id', 'text')
+    list_display = ('id', 'name')
 
 
 @admin.register(story.StoryTest)

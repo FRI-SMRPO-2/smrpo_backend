@@ -5,13 +5,20 @@ from smrpo.models.project import Project
 
 
 class StoryPriority(models.Model):
-    text = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, unique=True)
 
     class Meta:
         verbose_name_plural = "Story priorities"
 
     def __str__(self):
         return self.text
+
+    @property
+    def api_data(self):
+        return dict(
+            id=self.id,
+            name=self.name
+        )
 
 
 class StoryTest(models.Model):
@@ -47,6 +54,8 @@ class Story(models.Model):
             id=self.id,
             name=self.name,
             text=self.text,
+            business_value=self.business_value,
+            priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,
             created_by=self.created_by.api_data,
