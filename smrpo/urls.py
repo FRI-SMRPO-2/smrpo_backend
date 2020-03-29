@@ -5,6 +5,7 @@ from smrpo.views.home import HomeView
 from smrpo.views.project import ProjectView, ProjectsView, AuthProjectUserView
 from smrpo.views.project_role import ProjectRolesView
 from smrpo.views.sprint import SprintsView, SprintView
+from smrpo.views.story import StoriesView
 from smrpo.views.user import UsersView, AuthUserInfoView
 
 urlpatterns = [
@@ -23,6 +24,9 @@ urlpatterns = [
     # Sprints
     path('project/<int:project_id>/sprint/', SprintsView.as_view(), name="sprints"),
     path('project/<int:project_id>/sprint/<int:sprint_id>/', SprintView.as_view(), name="sprint"),
+
+    # Project story
+    path('project/<int:project_id>/story/', StoriesView.as_view(), name="stories"),
 
     # Project roles
     path('project_role/', ProjectRolesView.as_view(), name="project_roles"),

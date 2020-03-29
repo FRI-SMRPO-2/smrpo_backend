@@ -9,7 +9,6 @@ from smrpo.models.project import Project
 from smrpo.models.sprint import Sprint
 
 
-# TODO also add permissions, so that only project memmbers and/or admin can access this API
 class SprintsView(APIView):
     """
         Get all project sprints.
