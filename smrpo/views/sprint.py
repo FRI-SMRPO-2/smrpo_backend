@@ -15,20 +15,15 @@ class SprintsView(APIView):
     """
     def get(self, request, project_id):
         user = request.user
-        # Get all project sprints
-        sprints = Sprint.objects.filter(project_id=project_id)
-
-        # Get project's sprints, only superuser can view all sprints
-        if not user.is_superuser:
-            sprints = sprints.filter(project__users=user)
-
+        # Get project's sprints
+        sprints = Sprint.objects.filter(project_id=project_id, project__users=user)
         sprints = [sprint.api_data for sprint in sprints]
 
         return JsonResponse(sprints, safe=False)
 
     """
         Create a new sprint.
-        Only superuser or project user with methodology master role can create new sprints.
+        Only project user with methodology master role can create new sprints.
     """
     def post(self, request, project_id):
         user = request.user
@@ -41,7 +36,7 @@ class SprintsView(APIView):
             projectuser__role__title='Methodology master'
         ).exists()
 
-        if not user.is_superuser and not user_is_methodology_master:
+        if not user_is_methodology_master:
             return HttpResponse('User is forbidden to access this resource.', status=403)
 
         start_date = data.get('start_date')
@@ -85,12 +80,7 @@ class SprintView(APIView):
         Get sprint by id.
     """
     def get(self, request, project_id, sprint_id):
-        user = request.user
-
-        # Check if user is superuser or if user is project user.
-        if user.is_superuser:
-            sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id)
-        else:
-            sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id, project__users=user)
+        # Return user's project sprint.
+        sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id, project__users=request.user)
 
         return JsonResponse(sprint.api_data, safe=False)
