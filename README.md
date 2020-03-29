@@ -1,5 +1,45 @@
 # Dokumentacija
 
+## Prijava v sistem
+
+### /login
+
+Stran, na katero je uporabnik avtomatsko preusmerjen, če še ni prijavljen v sistem.
+
+### POST /api/auth
+
+Endpoint, ki se uporablja za prijavo uporabnika.
+
+Vrne avtentikacijski žeton (token).
+
+Telo zahtevka: 
+
+```json
+{
+	"username": "admin",
+	"password": "password"
+}
+```
+
+Primer odgovora ob uspešni prijavi:
+
+```
+{
+    "token": "9575f2836db919bd1056be64fbdcf01ba52d4ddd"
+}
+```
+
+Ob prijavi z napačnim uporabniškim imenom oz. geslom dobimo:
+
+```json
+{
+    "non_field_errors": [
+        "Unable to log in with provided credentials."
+    ]
+}
+```
+
+
 ## Projektne vloge
 
 ### GET /api/project_role
