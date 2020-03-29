@@ -170,10 +170,6 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        },
         'django.request': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
@@ -185,10 +181,6 @@ LOGGING = {
             'propagate': True,
         },
         'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-        },
-        'testlogger': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
         }

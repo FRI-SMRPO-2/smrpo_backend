@@ -84,3 +84,13 @@ class ProjectView(APIView):
             project = get_object_or_404(Project, pk=pk, users=user)
 
         return JsonResponse(project.api_data, safe=False)
+
+
+class AuthProjectUserView(APIView):
+    """
+        Return authenticated project user.
+    """
+
+    def get(self, request, pk):
+        project_user = get_object_or_404(ProjectUser, user=request.user, project_id=pk)
+        return JsonResponse(project_user.api_data)

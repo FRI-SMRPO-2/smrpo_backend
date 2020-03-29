@@ -2,7 +2,7 @@ from django.urls import path
 from rest_framework.authtoken.views import obtain_auth_token
 
 from smrpo.views.home import HomeView
-from smrpo.views.project import ProjectView, ProjectsView
+from smrpo.views.project import ProjectView, ProjectsView, AuthProjectUserView
 from smrpo.views.project_role import ProjectRolesView
 from smrpo.views.sprint import SprintsView, SprintView
 from smrpo.views.user import UsersView, AuthUserInfoView
@@ -18,6 +18,7 @@ urlpatterns = [
     # Project
     path('project/', ProjectsView.as_view(), name="projects"),
     path('project/<int:pk>/', ProjectView.as_view(), name="project"),
+    path('project/<int:pk>/user/me/', AuthProjectUserView.as_view(), name="auth_project_user"),
 
     # Sprints
     path('project/<int:project_id>/sprint/', SprintsView.as_view(), name="sprints"),
