@@ -261,3 +261,89 @@ Pridobi vse sprinte, ki pripradajo projektu z ID-jem {project_id}.
     }
 ]
 ```
+
+## Uporabniške zgodbe
+
+### GET /api/project/{project_id}/story/
+
+Pridobi vse uporabniške zgodbe projekta z ID-jem {project_id}.
+
+```json
+[
+    {
+        "id": 1,
+        "name": "Zgodbica za lahko noc",
+        "text": "zanimiva zgodba",
+        "business_value": 2,
+        "priority": {
+            "id": 1,
+            "name": "Must have"
+        },
+        "tests": [
+            {
+                "id": 1,
+                "text": "test 1"
+            },
+            {
+                "id": 2,
+                "text": "test 2"
+            },
+            {
+                "id": 3,
+                "text": "se en test hehe"
+            }
+        ],
+        "project_id": 1,
+        "created_by": {
+            "id": 3,
+            "role": "Project manager",
+            "name": "",
+            "username": "admin",
+            "email": "admin@gmail.com"
+        },
+        "created": "2020-03-29T21:12:19.625Z",
+        "updated": "2020-03-29T21:14:56.209Z"
+    },
+    {
+        "id": 2,
+        "name": "Story",
+        "text": "test beseadasdasdasdasd",
+        "business_value": 2,
+        "priority": {
+            "id": 1,
+            "name": "Must have"
+        },
+        "tests": [],
+        "project_id": 1,
+        "created_by": {
+            "id": 3,
+            "role": "Project manager",
+            "name": "",
+            "username": "admin",
+            "email": "admin@gmail.com"
+        },
+        "created": "2020-03-29T21:15:06.445Z",
+        "updated": "2020-03-29T21:16:39.702Z"
+    },
+]
+```
+
+### POST /api/project/{project_id}/story/
+
+V projekt z ID-jem {project_id} doda novo uporabniško zgodbo.
+
+Telo zahtevka:
+
+```json
+{
+	"name": "Nova zgodba",
+	"text": "to je besedilo zgodbe",
+	"priority": 1,
+	"business_value": 0,
+	"tests": [
+		"test 1",
+		"test 2",
+		"test3"
+	]
+}
+```
