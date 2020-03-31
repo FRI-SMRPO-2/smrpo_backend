@@ -6,10 +6,11 @@ from smrpo.views.project import ProjectView, ProjectsView, AuthProjectUserView
 from smrpo.views.project_role import ProjectRolesView
 from smrpo.views.sprint import SprintsView, SprintView
 from smrpo.views.story import StoriesView
+from smrpo.views.token_authentication import TokenAuthenticationView
 from smrpo.views.user import UsersView, AuthUserInfoView
 
 urlpatterns = [
-    path('auth', obtain_auth_token, name='api_token_auth'),
+    path('auth', TokenAuthenticationView.as_view(), name='api_token_auth'),
     path('', HomeView.as_view(), name="home"),
 
     # User
