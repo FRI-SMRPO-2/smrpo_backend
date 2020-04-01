@@ -59,7 +59,7 @@ class Story(models.Model):
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,
-            created_by=self.created_by.username,
+            created_by=self.created_by.username if self.created_by else None,
             created=self.created,
             updated=self.updated,
         )

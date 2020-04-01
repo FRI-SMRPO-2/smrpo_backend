@@ -19,7 +19,6 @@ class ProjectUsersInline(admin.TabularInline):
 class ProjectStoriesInline(admin.TabularInline):
     model = story.Story
     extra = 1  # how many rows to show
-    readonly_fields = ('created_by',)
 
 
 @admin.register(project.Project)
