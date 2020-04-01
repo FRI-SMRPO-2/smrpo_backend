@@ -27,6 +27,7 @@ class Sprint(models.Model):
             end_date=self.end_date,
             expected_speed=self.expected_speed,
             project_id=self.project_id,
+            created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
         )

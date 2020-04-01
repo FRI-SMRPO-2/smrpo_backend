@@ -20,6 +20,7 @@ class ProjectsView(APIView):
 
         # Get user's projects, only superuser can view all projects
         if not user.is_superuser:
+            # Filter projects so that user can see only their projects
             projects = projects.filter(users=user)
 
         # If role parameter was passed return projects that match provided user role.

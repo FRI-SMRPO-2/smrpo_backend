@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
@@ -11,7 +12,7 @@ class StoryPriority(models.Model):
         verbose_name_plural = "Story priorities"
 
     def __str__(self):
-        return self.text
+        return self.name
 
     @property
     def api_data(self):
@@ -37,7 +38,7 @@ class Story(models.Model):
     project = models.ForeignKey(Project, on_delete=models.PROTECT, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
-    created_by = models.ForeignKey('ProjectUser', on_delete=models.PROTECT, blank=True, related_name='created_stories')
+    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_stories')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
@@ -58,7 +59,7 @@ class Story(models.Model):
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,
-            created_by=self.created_by.api_data,
+            created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
         )

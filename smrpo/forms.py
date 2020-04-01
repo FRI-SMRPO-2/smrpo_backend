@@ -25,14 +25,14 @@ class CreateStoryForm(ModelForm):
         fields = ['name', 'text', 'business_value', 'project', 'priority']
 
     def __init__(self, *args, **kwargs):
-        self.project_user = kwargs.pop('project_user', None)
+        self.user = kwargs.pop('user', None)
         super(CreateStoryForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
         instance = super(CreateStoryForm, self).save(commit=False)
 
-        if self.project_user:
-            instance.created_by = self.project_user
+        if self.user:
+            instance.created_by = self.user
 
         if commit:
             instance.save()

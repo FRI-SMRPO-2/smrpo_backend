@@ -23,6 +23,7 @@ class Project(models.Model):
             name=self.name,
             documentation=self.documentation,
             users=[user.api_data for user in self.projectuser_set.all()],
+            created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
         )

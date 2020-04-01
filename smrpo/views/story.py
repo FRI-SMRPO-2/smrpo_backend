@@ -14,7 +14,11 @@ class StoriesView(APIView):
     """
     def get(self, request, project_id):
         user = request.user
-        stories = Story.objects.filter(project_id=project_id, project__users=user)
+        stories = Story.objects.filter(project_id=project_id)
+
+        if not user.is_superuser:
+            stories = stories.filter(project__users=user)
+
         stories = [story.api_data for story in stories]
 
         return JsonResponse(stories, safe=False)
@@ -24,21 +28,23 @@ class StoriesView(APIView):
         Only a user with methodology master or project manager role can create new project stories.
     """
     def post(self, request, project_id):
+        user = request.user
         data = request.data
 
-        # Only users that are methodology masters or project managers can create stories.
-        try:
-            # Check if project user can create project stories.
-            project_user = ProjectUser.objects.get(
-                project_id=project_id,
-                user=request.user,
-                role__title__in=['Methodology master', 'Project manager']
-            )
-        except ProjectUser.DoesNotExist:
-            return HttpResponse('User is forbidden to access this resource.', status=403)
+        if not user.is_superuser:
+            # Only users that are methodology masters or project managers can create stories.
+            try:
+                # Check if project user can create project stories.
+                ProjectUser.objects.get(
+                    project_id=project_id,
+                    user=user,
+                    role__title__in=['Methodology master', 'Project manager']
+                )
+            except ProjectUser.DoesNotExist:
+                return HttpResponse('User is forbidden to access this resource.', status=403)
 
         data['project'] = project_id
-        form = CreateStoryForm(data, project_user=project_user)
+        form = CreateStoryForm(data, user=user)
 
         if form.is_valid():
             print("FORM IS VALID")
