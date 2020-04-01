@@ -8,9 +8,12 @@ from smrpo.forms import UserCreateForm
 class UsersView(APIView):
     """
         Return a list of all users.
+        Only superuser can access this view.
     """
     def get(self, request):
-        # TODO only admin and methodology master can access this view
+        if not request.user.is_superuser:
+            return HttpResponse('User is forbidden to access this resource.', status=403)
+
         search = request.GET.get('search')
 
         # Get users
