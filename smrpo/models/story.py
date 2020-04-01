@@ -35,7 +35,7 @@ class Story(models.Model):
     text = models.TextField(null=True, blank=True)
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
 
-    project = models.ForeignKey(Project, on_delete=models.PROTECT, related_name='stories')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_stories')

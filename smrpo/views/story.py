@@ -47,7 +47,6 @@ class StoriesView(APIView):
         form = CreateStoryForm(data, user=user)
 
         if form.is_valid():
-            print("FORM IS VALID")
             story = form.save()
             return JsonResponse(story.api_data, status=201)
 

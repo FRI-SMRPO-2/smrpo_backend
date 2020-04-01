@@ -12,7 +12,7 @@ class Sprint(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     expected_speed = models.FloatField()
-    project = models.ForeignKey(Project, on_delete=models.PROTECT, related_name='sprints')
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='sprints')
 
     # Maybe change FK to ProjectUser if needed
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_sprints')
