@@ -16,12 +16,18 @@ class ProjectUsersInline(admin.TabularInline):
     extra = 1  # how many rows to show
 
 
+class ProjectStoriesInline(admin.TabularInline):
+    model = story.Story
+    extra = 1  # how many rows to show
+    readonly_fields = ('created_by',)
+
+
 @admin.register(project.Project)
 class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'documentation', 'created_by', 'created', 'updated')
     raw_id_fields = ('created_by',)
     readonly_fields = ('created', 'updated')
-    inlines = (ProjectUsersInline,)
+    inlines = (ProjectUsersInline, ProjectStoriesInline)
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
