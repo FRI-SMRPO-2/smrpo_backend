@@ -39,6 +39,24 @@ Ob prijavi z napačnim uporabniškim imenom oz. geslom dobimo:
 }
 ```
 
+## Upravljanje uporabnikov
+
+### POST /api/user
+
+Ustvari novega uporabnika.
+
+Telo zahtevka: 
+
+```json
+{
+	"username": "anja.vrata",
+	"email": "anja.vrata@gmail.com",
+    "password1": "test12345",
+    "password2": "test12345",
+    "first_name": "Anja",
+    "last_name": "Vratar"
+}
+```
 
 ## Projektne vloge
 
