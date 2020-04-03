@@ -21,20 +21,37 @@ class ProjectUserRole(models.Model):
             return 'Podaj seznam uporabnikov.'
 
         users = set()
+        product_owner_role_id = ProjectUserRole.objects.get(title='Product Owner').id
+        scrum_master_role_id = ProjectUserRole.objects.get(title='Scrum Master').id
+
+        product_owner_count = 0
+        scrum_master_count = 0
+
         try:
             for user_role in user_roles:
                 user_id = user_role.get('user_id')
                 role_id = user_role.get('role_id')
+
                 if user_id is None or role_id is None:
                     return 'Neveljaven uporabnik ali vloga.'
 
                 if user_id in users:
                     return 'Uporabnik ima lahko samo eno vlogo.'
 
+                if role_id == product_owner_role_id:
+                    product_owner_count += 1
+
+                if role_id == scrum_master_role_id:
+                    scrum_master_count += 1
+
                 users.add(user_id)
-        except Exception as e:
-            print(e)  # TODO replace print with logger
+        except Exception:
             return 'Zgodila se je napaka.'
+
+        if product_owner_count < 1 or product_owner_count > 1:
+            return 'V projektu mora biti natanko 1 uporabnik z vlogo Product Owner.'
+        if scrum_master_count < 1 or scrum_master_count > 1:
+            return 'V projektu mora biti vsaj 1 uporabnik z vlogo Scrum Master.'
 
         return None
 
