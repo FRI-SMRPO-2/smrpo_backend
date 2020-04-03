@@ -17,6 +17,14 @@ class UserCreateForm(UserCreationForm):
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
 
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_active = True
+
+        if commit:
+            user.save()
+        return user
+
 
 class CreateStoryForm(ModelForm):
 
