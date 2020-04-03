@@ -28,20 +28,20 @@ class SprintsView(APIView):
 
     """
         Create a new sprint.
-        Only superuser or project user with methodology master role can create new sprints.
+        Only superuser or project user with the Scrum Master role can create new sprints.
     """
     def post(self, request, project_id):
         user = request.user
         data = request.data
 
         # Check if user is superuser or if user is project user.
-        user_is_methodology_master = Project.objects.filter(
+        user_is_scrum_master = Project.objects.filter(
             id=project_id,
             users=user,
-            projectuser__role__title='Methodology master'
+            projectuser__role__title='Scrum Master'
         ).exists()
 
-        if not user.is_superuser and not user_is_methodology_master:
+        if not user.is_superuser and not user_is_scrum_master:
             return HttpResponse('User is forbidden to access this resource.', status=403)
 
         start_date = data.get('start_date')

@@ -68,11 +68,11 @@ Vrne vse projektne vloge.
 [
     {
         "id": 12,
-        "title": "Project manager"
+        "title": "Product Owner"
     },
     {
         "id": 13,
-        "title": "Product manager"
+        "title": "Scrum Master"
     },
     {
         "id": 14,
@@ -80,7 +80,7 @@ Vrne vse projektne vloge.
     },
     {
         "id": 15,
-        "title": "Methodology master"
+        "title": "Developer"
     }
 ]
 ```
@@ -144,7 +144,7 @@ Vrne vse projekte v podatkovni bazi.
             },
             {
                 "id": 3,
-                "role": "Project manager",
+                "role": "Product Owner",
                 "name": "",
                 "username": "admin",
                 "email": "admin@gmail.com"
@@ -160,7 +160,7 @@ Vrne vse projekte v podatkovni bazi.
         "users": [
             {
                 "id": 4,
-                "role": "Project manager",
+                "role": "Product Owner",
                 "name": "",
                 "username": "admin",
                 "email": "admin@gmail.com"
@@ -200,7 +200,7 @@ Vrne projekt z ID-jem {id}.
         },
         {
             "id": 3,
-            "role": "Project manager",
+            "role": "Product Owner",
             "name": "",
             "username": "admin",
             "email": "admin@gmail.com"
@@ -314,7 +314,7 @@ Pridobi vse uporabniške zgodbe projekta z ID-jem {project_id}.
         "project_id": 1,
         "created_by": {
             "id": 3,
-            "role": "Project manager",
+            "role": "Product Owner",
             "name": "",
             "username": "admin",
             "email": "admin@gmail.com"
@@ -335,7 +335,7 @@ Pridobi vse uporabniške zgodbe projekta z ID-jem {project_id}.
         "project_id": 1,
         "created_by": {
             "id": 3,
-            "role": "Project manager",
+            "role": "Product Owner",
             "name": "",
             "username": "admin",
             "email": "admin@gmail.com"

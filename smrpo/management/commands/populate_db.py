@@ -12,9 +12,9 @@ projects = {
 }
 
 roles = [
-    ["project_manager", "Project manager"],
-    ["developer", "Developer"],
-    ["methodology_master", "Methodology master"]
+    ["product_owner", "Product Owner"],
+    ["scrum_master", "Scrum Master"],
+    ["developer", "Developer"]
 ]
 
 priorities = [

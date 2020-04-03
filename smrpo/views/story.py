@@ -25,20 +25,20 @@ class StoriesView(APIView):
 
     """
         Create a new project story.
-        Only a user with methodology master or project manager role can create new project stories.
+        Only a user with Scrum Master or Product Owner role can create new project stories.
     """
     def post(self, request, project_id):
         user = request.user
         data = request.data
 
         if not user.is_superuser:
-            # Only users that are methodology masters or project managers can create stories.
+            # Only users that are Scrum Masters or Product Owners can create stories.
             try:
                 # Check if project user can create project stories.
                 ProjectUser.objects.get(
                     project_id=project_id,
                     user=user,
-                    role__title__in=['Methodology master', 'Project manager']
+                    role__title__in=['Scrum Master', 'Product Owner']
                 )
             except ProjectUser.DoesNotExist:
                 return HttpResponse('User is forbidden to access this resource.', status=403)
