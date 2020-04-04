@@ -51,7 +51,7 @@ class ProjectUserRole(models.Model):
         if product_owner_count < 1 or product_owner_count > 1:
             return 'V projektu mora biti natanko 1 uporabnik z vlogo Product Owner.'
         if scrum_master_count < 1 or scrum_master_count > 1:
-            return 'V projektu mora biti vsaj 1 uporabnik z vlogo Scrum Master.'
+            return 'V projektu mora biti natanko 1 uporabnik z vlogo Scrum Master.'
 
         return None
 
