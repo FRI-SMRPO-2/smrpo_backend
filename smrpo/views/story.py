@@ -18,9 +18,7 @@ class StoriesView(APIView):
         stories = Story.objects.filter(project_id=project_id)
 
         if not user.is_superuser:
-            stories = stories.filter(
-                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
-            ).distinct()
+            stories = stories.filter(project__projectuser__user=user)
 
         stories = [story.api_data for story in stories]
 

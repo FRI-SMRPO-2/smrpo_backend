@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
-from django.db.models import Q
-from django.http import JsonResponse, HttpResponse, Http404
+from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
@@ -21,9 +20,7 @@ class SprintsView(APIView):
 
         # Get project's sprints, only superuser can view all sprints
         if not user.is_superuser:
-            sprints = sprints.filter(
-                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
-            ).distinct()
+            sprints = sprints.filter(project__projectuser__user=user)
 
         sprints = [sprint.api_data for sprint in sprints]
 
@@ -93,12 +90,6 @@ class SprintView(APIView):
         if user.is_superuser:
             sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id)
         else:
-            sprint = Sprint.objects.filter(
-                id=sprint_id, project_id=project_id
-            ).filter(
-                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
-            ).exists()
-            if not sprint:
-                return Http404
+            sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id, project__projectuser__user=user)
 
         return JsonResponse(sprint.api_data, safe=False)
