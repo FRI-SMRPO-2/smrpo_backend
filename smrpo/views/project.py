@@ -70,8 +70,10 @@ class ProjectsView(APIView):
                 p.scrum_master = ProjectUser.objects.create(user_id=scrum_master_id, project=p)
 
             for developer_id in developer_ids:
-                dev = ProjectUser(user_id=developer_id, project=p)
-                developers.append(dev.id)
+                if developer_id == product_owner_id or developer_id == scrum_master_id:
+                    developers.append(developer_id)
+                else:
+                    developers.append(ProjectUser.objects.create(user_id=developer_id, project=p).id)
 
             p.developers.set(developers)
             p.save()

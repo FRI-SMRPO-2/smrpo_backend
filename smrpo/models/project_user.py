@@ -16,10 +16,21 @@ class ProjectUser(models.Model):
         return "{} ({})".format(self.user.username, self.project_id)
 
     @property
+    def roles(self):
+        roles = []
+        if self == self.project.product_owner:
+            roles.append("Product Owner")
+        if self == self.project.scrum_master:
+            roles.append("Scrum Master")
+        if self.project.developers.filter(id=self.id).exists():
+            roles.append("Developer")
+        return roles
+
+    @property
     def api_data(self):
         return dict(
             id=self.id,
-            # role=self.role.title,  # TODO could create a role property if needed
+            role=self.roles,
             name=self.user.get_full_name(),
             username=self.user.username,
             email=self.user.email,
