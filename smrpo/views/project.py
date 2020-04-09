@@ -43,31 +43,28 @@ class ProjectsView(APIView):
 
         # Extract fields from request
         name = data.get('name')
-        user_roles = data.get('user_roles')
-
-        # Check if all fields are set and valid
-        error = ProjectUserRole.validate_user_roles(user_roles)
-
-        if error:
-            return JsonResponse({'message': error}, status=400)
+        scrum_master = data.get('scrum_master')
+        project_owner = data.get('project_owner')
+        developers = data.get('developers')
 
         if not name:
             return JsonResponse({'message': 'Ime ni nastavljeno'}, status=400)
 
+        if not scrum_master:
+            return JsonResponse({'message': 'Scrum master ni nastavljen'}, status=400)
+
+        if not project_owner:
+            return JsonResponse({'message': 'Project owner ni nastavljen'}, status=400)
+
+        if not isinstance(developers, list):
+            return JsonResponse({'message': 'Developers mora biti seznam'}, status=400)
+
         # Create a project
         try:
-            p = Project.objects.create(name=name, created_by=current_user)
-        except IntegrityError:
-            return JsonResponse({'message': 'Projekt s tem imenom že obstaja'}, status=400)
-
-        try:
-            for user_role in user_roles:
-                pu = ProjectUser(user_id=user_role['user_id'], role_id=user_role['role_id'], project=p)
-                pu.save()
+            p = Project.objects.create(name=name, created_by=current_user, scrum_master_id=scrum_master, project_owner_id=project_owner)
+            p.developers.set(developers)
         except Exception as e:
-            print(e)  # TODO replace print with logger
-            p.delete()
-            return JsonResponse({'message': 'Napaka pri dodajanju uporabnikov v projekt'}, status=400)
+            return JsonResponse({'message': 'Napaka pri dodajanju projekta'}, status=400)
 
         return JsonResponse(p.api_data, safe=False, status=201)
 
