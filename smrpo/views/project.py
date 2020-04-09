@@ -1,10 +1,9 @@
-from django.db import IntegrityError
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
-from smrpo.models.project_user import ProjectUser, ProjectUserRole
+from smrpo.models.project_user import ProjectUser
 
 
 class ProjectsView(APIView):
@@ -13,7 +12,6 @@ class ProjectsView(APIView):
     """
 
     def get(self, request):
-        role = request.GET.get('role')
         user = request.user
 
         projects = Project.objects.all()
@@ -22,10 +20,6 @@ class ProjectsView(APIView):
         if not user.is_superuser:
             # Filter projects so that user can see only their projects
             projects = projects.filter(users=user)
-
-        # If role parameter was passed return projects that match provided user role.
-        if role:
-            projects = projects.filter(projectuser__role__title=role)
 
         if request.GET.get('names'):
             projects = list(projects.values('id', 'name'))
@@ -44,7 +38,7 @@ class ProjectsView(APIView):
         # Extract fields from request
         name = data.get('name')
         scrum_master = data.get('scrum_master')
-        project_owner = data.get('project_owner')
+        product_owner = data.get('product_owner')
         developers = data.get('developers')
 
         if not name:
@@ -53,15 +47,15 @@ class ProjectsView(APIView):
         if not scrum_master:
             return JsonResponse({'message': 'Scrum master ni nastavljen'}, status=400)
 
-        if not project_owner:
-            return JsonResponse({'message': 'Project owner ni nastavljen'}, status=400)
+        if not product_owner:
+            return JsonResponse({'message': 'Product owner ni nastavljen'}, status=400)
 
         if not isinstance(developers, list):
             return JsonResponse({'message': 'Developers mora biti seznam'}, status=400)
 
         # Create a project
         try:
-            p = Project.objects.create(name=name, created_by=current_user, scrum_master_id=scrum_master, project_owner_id=project_owner)
+            p = Project.objects.create(name=name, created_by=current_user, scrum_master_id=scrum_master, product_owner_id=product_owner)
             p.developers.set(developers)
         except Exception as e:
             return JsonResponse({'message': 'Napaka pri dodajanju projekta'}, status=400)

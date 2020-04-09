@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 
@@ -17,7 +18,9 @@ class StoriesView(APIView):
         stories = Story.objects.filter(project_id=project_id)
 
         if not user.is_superuser:
-            stories = stories.filter(project__users=user)
+            stories = stories.filter(
+                Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user)
+            ).distinct()
 
         stories = [story.api_data for story in stories]
 
@@ -36,9 +39,8 @@ class StoriesView(APIView):
             try:
                 # Check if project user can create project stories.
                 ProjectUser.objects.get(
-                    project_id=project_id,
-                    user=user,
-                    role__title__in=['Scrum Master', 'Product Owner']
+                    Q(project_id=project_id),
+                    Q(project__scrum_master=user) | Q(project__product_owner=user)
                 )
             except ProjectUser.DoesNotExist:
                 return HttpResponse('User is forbidden to access this resource.', status=403)

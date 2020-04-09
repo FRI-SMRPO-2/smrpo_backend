@@ -37,16 +37,10 @@ class ProjectAdmin(admin.ModelAdmin):
 
 @admin.register(project_user.ProjectUser)
 class ProjectUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'role', 'created', 'updated')
+    list_display = ('id', 'user', 'created', 'updated')
     list_filter = ('created', 'updated')
     raw_id_fields = ('project', 'user')
     readonly_fields = ('created', 'updated')
-    search_fields = ('title',)
-
-
-@admin.register(project_user.ProjectUserRole)
-class ProjectUserRoleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'title',)
     search_fields = ('title',)
 
 

@@ -8,8 +8,7 @@ class Project(models.Model):
     name = models.CharField(max_length=60, unique=True)
     documentation = models.TextField(null=True, blank=True)
 
-    # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='sprints')
-    project_owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="project_owner")
+    product_owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="product_owner")
     scrum_master = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="scrum_master")
     developers = models.ManyToManyField(ProjectUser, related_name="developers")
 
@@ -27,7 +26,7 @@ class Project(models.Model):
             name=self.name,
             documentation=self.documentation,
             scrum_master=self.scrum_master.api_data,
-            project_owner=self.project_owner.api_data,
+            product_owner=self.product_owner.api_data,
             developers=[user.api_data for user in self.developers.all()],
             created_by=self.created_by.username,
             created=self.created,
