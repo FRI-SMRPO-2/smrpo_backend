@@ -22,7 +22,7 @@ class SprintsView(APIView):
         # Get project's sprints, only superuser can view all sprints
         if not user.is_superuser:
             sprints = sprints.filter(
-                Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user)
+                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
             ).distinct()
 
         sprints = [sprint.api_data for sprint in sprints]
@@ -96,7 +96,7 @@ class SprintView(APIView):
             sprint = Sprint.objects.filter(
                 id=sprint_id, project_id=project_id
             ).filter(
-                Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user)
+                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
             ).exists()
             if not sprint:
                 return Http404

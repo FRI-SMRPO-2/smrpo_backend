@@ -19,7 +19,7 @@ class StoriesView(APIView):
 
         if not user.is_superuser:
             stories = stories.filter(
-                Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user)
+                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(project__developers__user=user)
             ).distinct()
 
         stories = [story.api_data for story in stories]
@@ -40,7 +40,7 @@ class StoriesView(APIView):
                 # Check if project user can create project stories.
                 ProjectUser.objects.get(
                     Q(project_id=project_id),
-                    Q(project__scrum_master=user) | Q(project__product_owner=user)
+                    Q(project__scrum_master__user=user) | Q(project__product_owner__user=user)
                 )
             except ProjectUser.DoesNotExist:
                 return HttpResponse('User is forbidden to access this resource.', status=403)
