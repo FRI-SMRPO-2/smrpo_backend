@@ -55,6 +55,9 @@ class ProjectsView(APIView):
 
         # Create a project
         try:
+            # Remove duplicates from developer list
+            developers = list(set(developers))
+
             p = Project.objects.create(name=name, created_by=current_user, scrum_master_id=scrum_master, product_owner_id=product_owner)
             p.developers.set(developers)
         except Exception as e:
