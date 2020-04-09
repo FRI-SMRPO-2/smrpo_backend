@@ -8,7 +8,11 @@ class Project(models.Model):
     name = models.CharField(max_length=60, unique=True)
     documentation = models.TextField(null=True, blank=True)
 
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, through=ProjectUser, related_name='projects')
+    # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='sprints')
+    owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="owner")
+    scrum_master = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="scrum_master")
+    developers = models.ManyToManyField(ProjectUser, related_name="developers")
+
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_projects')
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
