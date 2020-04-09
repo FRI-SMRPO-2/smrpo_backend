@@ -37,30 +37,43 @@ class ProjectsView(APIView):
 
         # Extract fields from request
         name = data.get('name')
-        scrum_master = data.get('scrum_master')
-        product_owner = data.get('product_owner')
-        developers = data.get('developers')
+        # These are all user IDs
+        scrum_master_id = data.get('scrum_master_id')
+        product_owner_id = data.get('product_owner_id')
+        developer_ids = data.get('developer_ids')
 
         if not name:
             return JsonResponse({'message': 'Ime ni nastavljeno'}, status=400)
 
-        if not scrum_master:
+        if not scrum_master_id:
             return JsonResponse({'message': 'Scrum master ni nastavljen'}, status=400)
 
-        if not product_owner:
+        if not product_owner_id:
             return JsonResponse({'message': 'Product owner ni nastavljen'}, status=400)
 
-        if not isinstance(developers, list):
+        if not isinstance(developer_ids, list):
             return JsonResponse({'message': 'Developers mora biti seznam'}, status=400)
 
-        # Create a project
-        try:
-            # Remove duplicates from developer list
-            developers = list(set(developers))
+        # Remove duplicates from developer list
+        developer_ids = list(set(developer_ids))
 
-            p = Project.objects.create(name=name, created_by=current_user, scrum_master_id=scrum_master, product_owner_id=product_owner)
+        # Create a project
+        p = None
+        try:
+            developers = []
+            p = Project.objects.create(name=name, created_by=current_user)
+
+            p.product_owner = ProjectUser.objects.create(user_id=product_owner_id, project=p)
+            p.scrum_master = ProjectUser.objects.create(user_id=scrum_master_id, project=p)
+
+            for developer_id in developer_ids:
+                dev = ProjectUser(user_id=developer_id, project=p)
+                developers.append(dev.id)
+
             p.developers.set(developers)
         except Exception as e:
+            if p:
+                p.delete()
             return JsonResponse({'message': 'Napaka pri dodajanju projekta'}, status=400)
 
         return JsonResponse(p.api_data, safe=False, status=201)
