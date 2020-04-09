@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
@@ -14,12 +15,12 @@ class ProjectsView(APIView):
     def get(self, request):
         user = request.user
 
-        projects = Project.objects.all()
-
-        # Get user's projects, only superuser can view all projects
-        if not user.is_superuser:
+        if user.is_superuser:
+            # Get user's projects, only superuser can view all projects
+            projects = Project.objects.all()
+        else:
             # Filter projects so that user can see only their projects
-            projects = projects.filter(users=user)
+            projects = Project.objects.filter(Q(scrum_master__user=user) | Q(product_owner__user=user) | Q(developers__user=user)).distinct()
 
         if request.GET.get('names'):
             projects = list(projects.values('id', 'name'))
