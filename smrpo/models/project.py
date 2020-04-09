@@ -9,7 +9,7 @@ class Project(models.Model):
     documentation = models.TextField(null=True, blank=True)
 
     # project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='sprints')
-    owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="owner")
+    project_owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="project_owner")
     scrum_master = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="scrum_master")
     developers = models.ManyToManyField(ProjectUser, related_name="developers")
 
@@ -26,7 +26,9 @@ class Project(models.Model):
             id=self.id,
             name=self.name,
             documentation=self.documentation,
-            users=[user.api_data for user in self.projectuser_set.all()],
+            scrum_master=self.scrum_master.api_data,
+            project_owner=self.project_owner.api_data,
+            developers=[user.api_data for user in self.developers.all()],
             created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
