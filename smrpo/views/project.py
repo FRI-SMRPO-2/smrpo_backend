@@ -98,7 +98,7 @@ class ProjectView(APIView):
         if user.is_superuser:
             project = get_object_or_404(Project, pk=pk)
         else:
-            project = get_object_or_404(Project, pk=pk, users=user)
+            project = get_object_or_404(Project, pk=pk, projectuser__user=user)
 
         return JsonResponse(project.api_data, safe=False)
 
