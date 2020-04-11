@@ -37,7 +37,7 @@ class SprintsView(APIView):
         # Check if user is a Scrum Master.
         user_is_scrum_master = Project.objects.filter(
             id=project_id,
-            scrum_master=user,
+            scrum_master__user=user,
         ).exists()
 
         if not user.is_superuser and not user_is_scrum_master:
