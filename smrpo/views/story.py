@@ -38,7 +38,7 @@ class StoriesView(APIView):
 
         # divide stories into 3 sections
         realized = stories.filter(realized=True)
-        assigned = stories.exclude(realized=True, sprint=None).filter(sprint__start_date__lte=timezone.now(),
+        assigned = stories.exclude(realized=True).filter(sprint__start_date__lte=timezone.now(),
                                                                       sprint__end_date__gte=timezone.now())
         realized_ids = list(realized.values_list('id', flat=True))
         assigned_ids = list(assigned.values_list('id', flat=True))
