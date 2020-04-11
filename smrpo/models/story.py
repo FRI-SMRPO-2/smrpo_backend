@@ -38,7 +38,7 @@ class Story(models.Model):
     realized = models.BooleanField(default=False)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
-    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name='stories')
+    sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.CASCADE, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_stories')
