@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 from smrpo.models.project import Project
+from smrpo.models.sprint import Sprint
 
 
 class StoryPriority(models.Model):
@@ -34,8 +35,10 @@ class Story(models.Model):
     name = models.CharField(max_length=255)
     text = models.TextField(null=True, blank=True)
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    realized = models.BooleanField(default=False)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
+    sprint = models.ForeignKey(Sprint, on_delete=models.CASCADE, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_stories')
