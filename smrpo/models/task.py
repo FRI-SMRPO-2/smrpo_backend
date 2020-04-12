@@ -46,6 +46,18 @@ class Task(models.Model):
     def api_data(self):
         return dict(
             id=self.id,
+            title=self.title,
+            description=self.description,
+            status=self.status,
+            active=self.active,
+            assignee=self.assignee.api_data if self.assignee else None,
+            created_by=self.created_by.username if self.created_by else None,
+            finished_by=self.finished_by.username if self.finished_by else None,
+            canceled_by=self.canceled_by.username if self.canceled_by else None,
+            finished=self.finished,
+            closed=self.closed,
+            created=self.created,
+            updated=self.updated
         )
 
 
@@ -59,4 +71,5 @@ def task_post_save(sender, instance, *args, **kwargs):
         status = "pending"
 
     if status != instance.status:
-        instance.update(status=status)
+        instance.status = status
+        instance.save()

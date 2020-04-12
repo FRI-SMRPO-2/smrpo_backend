@@ -54,16 +54,23 @@ class Story(models.Model):
         return self.name
 
     def get_unassigned_tasks(self):
-        return []
+        # exclude finished, include tasks with assignee null
+        return self.tasks.exclude(finished__isnull=False).exclude(active=True).filter(assignee__isnull=True)
 
     def get_assigned_tasks(self):
-        return []
+        # exclude finished, include tasks with assignee not null
+        return self.tasks.exclude(finished__isnull=False).exclude(active=True).filter(assignee__isnull=False)
 
     def get_finished_tasks(self):
-        return []
+        return self.tasks.filter(finished__isnull=False)
 
     def get_active_tasks(self):
-        return []
+        # exclude finished, return tasks with active=True
+        return self.tasks.exclude(finished__isnull=False).filter(active=True)
+
+    @staticmethod
+    def get_api_data(tasks):
+        return [x.api_data for x in tasks]
 
     @property
     def api_data(self):
@@ -79,9 +86,9 @@ class Story(models.Model):
             created=self.created,
             updated=self.updated,
             tasks={
-                'unassigned': self.get_unassigned_tasks(),
-                'assigned': self.get_assigned_tasks(),
-                'finished': self.get_finished_tasks(),
-                'active': self.get_active_tasks()
+                'unassigned': Story.get_api_data(self.get_unassigned_tasks()),
+                'assigned': Story.get_api_data(self.get_assigned_tasks()),
+                'finished': Story.get_api_data(self.get_finished_tasks()),
+                'active': Story.get_api_data(self.get_active_tasks())
             },
         )
