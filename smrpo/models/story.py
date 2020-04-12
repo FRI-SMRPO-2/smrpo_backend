@@ -35,6 +35,7 @@ class Story(models.Model):
     name = models.CharField(max_length=255)
     text = models.TextField(null=True, blank=True)
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
+    # set at the end of the sprint if all acceptance tests passed
     realized = models.BooleanField(default=False)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')

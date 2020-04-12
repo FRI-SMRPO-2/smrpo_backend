@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+from smrpo.models.project_user import ProjectUser
 from smrpo.models.story import Story
 
 
@@ -14,6 +15,7 @@ class Task(models.Model):
     status = models.CharField(max_length=40, default="open")
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
     active = models.BooleanField(default=False)
+    assignee = models.ForeignKey(ProjectUser, null=True, blank=True, on_delete=models.SET_NULL)
 
     story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='tasks')
 
