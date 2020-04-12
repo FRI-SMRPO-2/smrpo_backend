@@ -40,6 +40,12 @@ class Task(models.Model):
         self.finished_by = user
         self.save()
 
+    @property
+    def api_data(self):
+        return dict(
+            id=self.id,
+        )
+
 
 @receiver(post_save, sender=Task)
 def task_post_save(sender, instance, *args, **kwargs):

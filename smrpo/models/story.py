@@ -52,6 +52,18 @@ class Story(models.Model):
     def __str__(self):
         return self.name
 
+    def get_unassigned_tasks(self):
+        return []
+
+    def get_assigned_tasks(self):
+        return []
+
+    def get_finished_tasks(self):
+        return []
+
+    def get_active_tasks(self):
+        return []
+
     @property
     def api_data(self):
         return dict(
@@ -65,4 +77,10 @@ class Story(models.Model):
             created_by=self.created_by.username if self.created_by else None,
             created=self.created,
             updated=self.updated,
+            tasks={
+                'unassigned': self.get_unassigned_tasks(),
+                'assigned': self.get_assigned_tasks(),
+                'finished': self.get_finished_tasks(),
+                'active': self.get_active_tasks()
+            },
         )

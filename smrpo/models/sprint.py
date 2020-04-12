@@ -30,6 +30,7 @@ class Sprint(models.Model):
             created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
+            stories=[x.api_data for x in self.stories.all()]
         )
 
 
