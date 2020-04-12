@@ -54,11 +54,11 @@ class Story(models.Model):
         return self.name
 
     def get_unassigned_tasks(self):
-        # exclude finished, include tasks with assignee null
+        # exclude finished, exclude active, include tasks with assignee null
         return self.tasks.exclude(finished__isnull=False).exclude(active=True).filter(assignee__isnull=True)
 
     def get_assigned_tasks(self):
-        # exclude finished, include tasks with assignee not null
+        # exclude finished, exclude active, include tasks with assignee not null
         return self.tasks.exclude(finished__isnull=False).exclude(active=True).filter(assignee__isnull=False)
 
     def get_finished_tasks(self):
