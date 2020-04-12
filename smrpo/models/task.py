@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
 
+from smrpo.models.story import Story
+
 
 class Task(models.Model):
     title = models.CharField(max_length=100)
@@ -11,6 +13,9 @@ class Task(models.Model):
 
     status = models.CharField(max_length=40, default="open")
     users = models.ManyToManyField(settings.AUTH_USER_MODEL)
+    active = models.BooleanField(default=False)
+
+    story = models.ForeignKey(Story, on_delete=models.CASCADE, related_name='tasks')
 
     finished_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name='finished_tasks')
     canceled_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT, related_name='canceled_tasks')
