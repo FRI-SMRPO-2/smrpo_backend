@@ -18,6 +18,7 @@ class SprintStoriesView(APIView):
         if not sprint:
             return HttpResponse('Sprint s tem ID-jem ne obstaja', 404)
 
+        # TODO this will raise exception if not exist
         project = Project.objects.get(sprints=sprint_id)
 
         if not project:
