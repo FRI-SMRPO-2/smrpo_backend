@@ -61,24 +61,14 @@ class ProjectsView(APIView):
         # Create a project
         p = None
         try:
-            developers = []
-            p = Project.objects.create(name=name, created_by=current_user)
+            p = Project.objects.create(
+                product_owner_id=product_owner_id,
+                scrum_master_id=scrum_master_id,
+                name=name,
+                created_by=current_user
+            )
 
-            p.product_owner = ProjectUser.objects.create(user_id=product_owner_id, project=p)
-            if product_owner_id == scrum_master_id:
-                p.scrum_master = p.product_owner
-            else:
-                p.scrum_master = ProjectUser.objects.create(user_id=scrum_master_id, project=p)
-
-            for developer_id in developer_ids:
-                if developer_id == product_owner_id:
-                    developers.append(p.product_owner.id)
-                elif developer_id == scrum_master_id:
-                    developers.append(p.scrum_master.id)
-                else:
-                    developers.append(ProjectUser.objects.create(user_id=developer_id, project=p).id)
-
-            p.developers.set(developers)
+            p.developers.set(developer_ids)
             p.save()
         except Exception as e:
             if p:
