@@ -82,16 +82,15 @@ class StoryView(APIView):
     def put(self, request, project_id, story_id):
         user = request.user
 
-        # check if user has access to project
         try:
-            # Check if user is part of the project
-            ProjectUser.objects.filter(
-                Q(project_id=project_id),
-                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(
-                    project__developers__user=user)
-            )
-        except ProjectUser.DoesNotExist:
-            return HttpResponse("Uporabnik ne pripada temu projektu", status=403)
+            project = Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            return HttpResponse('Projekt s tem ID-jem ne obstaja', status=404)
+
+        if not user.is_superuser:
+            is_developer = project.developers.all().filter(pk=user.api_data()['id']).exists()
+            if not (project.product_owner == user or project.scrum_master == user or is_developer):
+                return HttpResponse('User is forbidden to access this resource.', status=403)
 
         # check if story exists in project
         try:
