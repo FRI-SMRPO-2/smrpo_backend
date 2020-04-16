@@ -1,8 +1,8 @@
-from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from smrpo.forms import UserCreateForm
+from smrpo.models import User
 
 
 class UsersView(APIView):

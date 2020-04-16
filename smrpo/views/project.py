@@ -1,10 +1,9 @@
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
-from smrpo.models.project_user import ProjectUser
 
 
 class ProjectsView(APIView):
@@ -88,7 +87,11 @@ class ProjectView(APIView):
         if user.is_superuser:
             project = get_object_or_404(Project, pk=pk)
         else:
-            project = get_object_or_404(Project, pk=pk, projectuser__user=user)
+            try:
+                project = Project.objects.filter(Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user)).get(
+                    pk=pk)
+            except Project.DoesNotExist:
+                return HttpResponse("Projekt ne obstaja ali pa uporabnik ni del njega", status=404)
 
         return JsonResponse(project.api_data, safe=False)
 
