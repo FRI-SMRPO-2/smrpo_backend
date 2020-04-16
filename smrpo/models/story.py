@@ -37,6 +37,7 @@ class Story(models.Model):
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
     # set at the end of the sprint if all acceptance tests passed
     realized = models.BooleanField(default=False)
+    time_complexity = models.FloatField(null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
     sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.CASCADE, related_name='stories')
