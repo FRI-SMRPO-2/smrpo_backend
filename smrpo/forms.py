@@ -1,7 +1,7 @@
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
 from django.forms import ModelForm
 
+from smrpo.models import User
 from smrpo.models.story import Story, StoryTest
 
 
