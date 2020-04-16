@@ -97,13 +97,17 @@ class StoryView(APIView):
                     project__developers__user=user)
             )
         except ProjectUser.DoesNotExist:
-            return HttpResponse("User doesn't belong to this project", status=403)
+            return HttpResponse("Uporabnik ne pripada temu projektu", status=403)
 
         # check if story exists in project
         try:
             story = Story.objects.filter(project_id=project_id).get(pk=story_id)
         except Story.DoesNotExist:
-            return HttpResponse("Story s tem ID-jem ne obstaja", status=404)
+            return HttpResponse("Uporabniška zgodba s tem ID-jem ne obstaja", status=404)
+
+        # story must not belong to any sprint
+        if story.sprint is not None:
+            return HttpResponse("Uporabniška zgodba je del sprinta!", status=400)
 
         data = request.data
         name = data.get('name')
