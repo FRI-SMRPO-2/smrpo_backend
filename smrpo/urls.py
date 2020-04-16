@@ -1,7 +1,6 @@
 from django.urls import path
 
 from smrpo.views.current_sprint import ActiveSprintView
-from smrpo.views.home import HomeView
 from smrpo.views.project import ProjectView, ProjectsView, AuthProjectUserView
 from smrpo.views.sprint import SprintsView, SprintView
 from smrpo.views.sprint_stories import SprintStoriesView
@@ -11,7 +10,6 @@ from smrpo.views.user import UsersView, AuthUserInfoView
 
 urlpatterns = [
     path('auth', TokenAuthenticationView.as_view(), name='api_token_auth'),
-    path('', HomeView.as_view(), name="home"),
 
     # User
     path('user/me/', AuthUserInfoView.as_view(), name="auth_user_info"),

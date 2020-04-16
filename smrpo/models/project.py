@@ -1,18 +1,16 @@
 from django.conf import settings
 from django.db import models
 
-from smrpo.models.project_user import ProjectUser
-
 
 class Project(models.Model):
     name = models.CharField(max_length=60, unique=True)
     documentation = models.TextField(null=True, blank=True)
 
     # It can't be null, but otherwise you can't create new one
-    product_owner = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="product_owner", null=True)
+    product_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="product_owner", null=True)
     # It can't be null, but otherwise you can't create new one
-    scrum_master = models.ForeignKey(ProjectUser, on_delete=models.CASCADE, related_name="scrum_master", null=True)
-    developers = models.ManyToManyField(ProjectUser, related_name="developers")
+    scrum_master = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="scrum_master", null=True)
+    developers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="developers")
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_projects')
     created = models.DateTimeField(auto_now_add=True)

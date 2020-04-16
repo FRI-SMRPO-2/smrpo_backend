@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from smrpo.models import task, project, project_user, sprint, story
+from smrpo.models import task, project, sprint, story
 
 
 @admin.register(task.Task)
@@ -11,8 +11,8 @@ class TaskAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
-class ProjectUsersInline(admin.TabularInline):
-    model = project_user.ProjectUser
+class ProjectSprintsInline(admin.TabularInline):
+    model = sprint.Sprint
     extra = 1  # how many rows to show
 
 
@@ -26,22 +26,13 @@ class ProjectAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'documentation', 'created_by', 'created', 'updated')
     raw_id_fields = ('created_by',)
     readonly_fields = ('created', 'updated')
-    inlines = (ProjectUsersInline, ProjectStoriesInline)
+    inlines = (ProjectSprintsInline, ProjectStoriesInline)
 
     def save_model(self, request, obj, form, change):
         if not obj.pk:
             if getattr(obj, 'created_by', None) is None:
                 obj.created_by = request.user
         super().save_model(request, obj, form, change)
-
-
-@admin.register(project_user.ProjectUser)
-class ProjectUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'user', 'created', 'updated')
-    list_filter = ('created', 'updated')
-    raw_id_fields = ('project', 'user')
-    readonly_fields = ('created', 'updated')
-    search_fields = ('title',)
 
 
 @admin.register(sprint.Sprint)
