@@ -18,20 +18,15 @@ class StoriesView(APIView):
     def get(self, request, project_id):
         user = request.user
 
-        project = Project.objects.filter(id=project_id)
-        if not project:
+        try:
+            project = Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
             return HttpResponse('Projekt s tem ID-jem ne obstaja', 404)
 
         # check if user is part of the project
         if not user.is_superuser:
-            try:
-                # Check if user is part of the project
-                ProjectUser.objects.filter(
-                    Q(project_id=project_id),
-                    Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(
-                        project__developers__user=user)
-                )
-            except ProjectUser.DoesNotExist:
+            is_developer = project.developers.all().filter(pk=user.api_data()['id']).exists()
+            if not (project.product_owner == user or project.scrum_master == user or is_developer):
                 return HttpResponse('User is forbidden to access this resource.', status=403)
 
         # get all project stories
@@ -60,15 +55,14 @@ class StoriesView(APIView):
         user = request.user
         data = request.data
 
+        try:
+            project = Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            return HttpResponse('Projekt s tem ID-jem ne obstaja', 404)
+
         if not user.is_superuser:
             # Only users that are Scrum Masters or Product Owners can create stories.
-            try:
-                # Check if project user can create project stories.
-                ProjectUser.objects.get(
-                    Q(project_id=project_id),
-                    Q(project__scrum_master__user=user) | Q(project__product_owner__user=user)
-                )
-            except ProjectUser.DoesNotExist:
+            if not (project.product_owner == user or project.scrum_master == user):
                 return HttpResponse('User is forbidden to access this resource.', status=403)
 
         data['project'] = project_id

@@ -14,26 +14,20 @@ class SprintStoriesView(APIView):
     def get(self, request, sprint_id):
         user = request.user
 
-        sprint = Sprint.objects.get(id=sprint_id)
-        if not sprint:
+        try:
+            sprint = Sprint.objects.get(id=sprint_id)
+        except Sprint.DoesNotExist:
             return HttpResponse('Sprint s tem ID-jem ne obstaja', 404)
 
-        # TODO this will raise exception if not exist
-        project = Project.objects.get(sprints=sprint_id)
-
-        if not project:
+        try:
+            project = Project.objects.get(sprints=sprint_id)
+        except Project.DoesNotExist:
             return HttpResponse('Sprint ni del nobenega projekta', 400)
 
         # check if user is part of the project
         if not user.is_superuser:
-            try:
-                # Check if user is part of the project
-                ProjectUser.objects.filter(
-                    Q(project_id=project.id),
-                    Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(
-                        project__developers__user=user)
-                )
-            except ProjectUser.DoesNotExist:
+            is_developer = project.developers.all().filter(pk=user.api_data()['id']).exists()
+            if not (project.product_owner == user or project.scrum_master == user or is_developer):
                 return HttpResponse('User is forbidden to access this resource.', status=403)
 
         return JsonResponse(sprint.api_data, safe=False)

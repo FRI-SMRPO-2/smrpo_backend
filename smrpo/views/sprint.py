@@ -1,5 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.dateparse import parse_date
@@ -20,7 +21,7 @@ class SprintsView(APIView):
 
         # Get project's sprints, only superuser can view all sprints
         if not user.is_superuser:
-            sprints = sprints.filter(project__projectuser__user=user)
+            sprints = sprints.filter(Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user))
 
         sprints = [sprint.api_data for sprint in sprints]
 
@@ -37,7 +38,7 @@ class SprintsView(APIView):
         # Check if user is a Scrum Master.
         user_is_scrum_master = Project.objects.filter(
             id=project_id,
-            scrum_master__user=user,
+            scrum_master=user,
         ).exists()
 
         if not user.is_superuser and not user_is_scrum_master:
@@ -90,6 +91,11 @@ class SprintView(APIView):
         if user.is_superuser:
             sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id)
         else:
-            sprint = get_object_or_404(Sprint, id=sprint_id, project_id=project_id, project__projectuser__user=user)
+            try:
+                sprint = Sprint.objects.filter(project_id=project_id).filter(
+                    Q(project__product_owner=user) | Q(project__scrum_master=user) | Q(project__developers=user)).get(
+                    pk=sprint_id)
+            except Sprint.DoesNotExist:
+                return HttpResponse("Sprint ne obstaja", status=404)
 
         return JsonResponse(sprint.api_data, safe=False)
