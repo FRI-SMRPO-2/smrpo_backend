@@ -99,5 +99,5 @@ class AuthProjectUserView(APIView):
     """
 
     def get(self, request, pk):
-        project_user = get_object_or_404(ProjectUser, user=request.user, project_id=pk)
-        return JsonResponse(project_user.api_data)
+        user = request.user
+        return JsonResponse(user.api_data(pk))
