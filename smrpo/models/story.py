@@ -80,6 +80,7 @@ class Story(models.Model):
             name=self.name,
             text=self.text,
             business_value=self.business_value,
+            time_complexity=self.time_complexity,
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,

@@ -86,5 +86,53 @@ class StoriesView(APIView):
 
 class StoryView(APIView):
     def put(self, request, project_id, story_id):
-        return JsonResponse("OK", safe=False, status=200)
+        user = request.user
 
+        # check if user has access to project
+        try:
+            # Check if user is part of the project
+            ProjectUser.objects.filter(
+                Q(project_id=project_id),
+                Q(project__scrum_master__user=user) | Q(project__product_owner__user=user) | Q(
+                    project__developers__user=user)
+            )
+        except ProjectUser.DoesNotExist:
+            return HttpResponse("User doesn't belong to this project", status=403)
+
+        # check if story exists in project
+        try:
+            story = Story.objects.filter(project_id=project_id).get(pk=story_id)
+        except Story.DoesNotExist:
+            return HttpResponse("Story s tem ID-jem ne obstaja", status=404)
+
+        data = request.data
+        name = data.get('name')
+        text = data.get('text')
+        business_value = data.get('business_value')
+        realized = data.get('realized')
+        time_complexity = data.get('time_complexity')
+
+        if name:
+            story.name = name
+
+        if text:
+            story.text = text
+
+        if business_value:
+            story.business_value = business_value
+
+        if realized:
+            story.realized = realized
+
+        # is not None - because 0 is equal to false in Python
+        if time_complexity is not None:
+            if time_complexity <= 0.0:
+                return HttpResponse("Časovna zahtevnost mora biti večja od 0!", status=400)
+            story.time_complexity = time_complexity
+
+        try:
+            story.save()
+        except:
+            return HttpResponse("Napaka pri posodabljanju uporabniške zgodbe!", 500)
+
+        return JsonResponse(story.api_data, safe=False, status=201)
