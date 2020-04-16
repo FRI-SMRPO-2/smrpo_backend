@@ -82,3 +82,9 @@ class StoriesView(APIView):
         for key, error in form.errors.items():
             errors[key] = list(error)
         return JsonResponse(errors, safe=False, status=400)
+
+
+class StoryView(APIView):
+    def put(self, request, project_id, story_id):
+        return JsonResponse("OK", safe=False, status=200)
+
