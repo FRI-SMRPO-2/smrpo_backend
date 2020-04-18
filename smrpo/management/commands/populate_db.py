@@ -30,5 +30,5 @@ class Command(BaseCommand):
 
         for priority in priorities:
             StoryPriority.objects.create(
-                text=priority
+                name=priority
             )
