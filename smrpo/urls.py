@@ -2,6 +2,7 @@ from django.urls import path
 
 from smrpo.views.current_sprint import ActiveSprintView
 from smrpo.views.project import ProjectView, ProjectsView, AuthProjectUserView
+from smrpo.views.realize_stories import RealizeStoriesView
 from smrpo.views.sprint import SprintsView, SprintView
 from smrpo.views.sprint_stories import SprintStoriesView
 from smrpo.views.story import StoriesView, StoryView
@@ -27,6 +28,7 @@ urlpatterns = [
 
     # User story
     path('project/<int:project_id>/story/<int:story_id>', StoryView.as_view(), name="story"),
+    path('project/<int:project_id>/story/realize', RealizeStoriesView.as_view(), name="realize_stories"),
 
     # Project story
     path('project/<int:project_id>/story/', StoriesView.as_view(), name="stories"),
