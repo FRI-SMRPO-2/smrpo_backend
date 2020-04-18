@@ -10,7 +10,7 @@ class Project(models.Model):
     product_owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="product_owner", null=True)
     # It can't be null, but otherwise you can't create new one
     scrum_master = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="scrum_master", null=True)
-    developers = models.ManyToManyField(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="developers")
+    developers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="developers")
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_projects')
     created = models.DateTimeField(auto_now_add=True)
