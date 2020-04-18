@@ -19,6 +19,9 @@ class Sprint(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return "{} ({} - {})".format(self.project, self.start_date, self.end_date)
+
     @property
     def is_active(self):
         now = timezone.now().date()
