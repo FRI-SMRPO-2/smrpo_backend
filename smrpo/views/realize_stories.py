@@ -21,4 +21,6 @@ class RealizeStoriesView(APIView):
             except Project.DoesNotExist:
                 return HttpResponse("Projekt ne obstaja ali pa uporabnik ni product owner", status=404)
 
+        # TODO: mark stories as realized
+
         return JsonResponse(project.api_data, status=200)
