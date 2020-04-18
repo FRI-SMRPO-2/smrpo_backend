@@ -17,11 +17,11 @@ class SprintsView(APIView):
     def get(self, request, project_id):
         user = request.user
         # Get all project sprints
-        sprints = Sprint.objects.filter(project_id=project_id)
+        sprints = Sprint.objects.filter(project_id=project_id).distinct()
 
         # Get project's sprints, only superuser can view all sprints
         if not user.is_superuser:
-            sprints = sprints.filter(Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user))
+            sprints = sprints.filter(Q(project__scrum_master=user) | Q(project__product_owner=user) | Q(project__developers=user)).distinct()
 
         sprints = [sprint.api_data for sprint in sprints]
 
