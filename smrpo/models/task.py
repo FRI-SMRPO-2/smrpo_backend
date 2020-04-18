@@ -54,6 +54,7 @@ class Task(models.Model):
             title=self.title,
             description=self.description,
             active=self.active,
+            estimated_time=self.estimated_time,
             assignee=self.assignee.username if self.assignee else None,
             assignee_awaiting=self.assignee_awaiting.username if self.assignee_awaiting else None,
             created_by=self.created_by.username if self.created_by else None,
