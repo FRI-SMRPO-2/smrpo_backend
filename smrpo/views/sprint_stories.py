@@ -3,7 +3,6 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
-from smrpo.models.project_user import ProjectUser
 from smrpo.models.sprint import Sprint
 
 
