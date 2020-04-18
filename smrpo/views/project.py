@@ -89,7 +89,8 @@ class ProjectView(APIView):
             project = get_object_or_404(Project, pk=pk)
         else:
             try:
-                project = Project.objects.filter(Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user)).get(
+                project = Project.objects.filter(
+                    Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user)).distinct().get(
                     pk=pk)
             except Project.DoesNotExist:
                 return HttpResponse("Projekt ne obstaja ali pa uporabnik ni del njega", status=404)

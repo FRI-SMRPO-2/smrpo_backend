@@ -23,4 +23,4 @@ class ActiveSprintView(APIView):
                 start_date__lte=now, end_date__gte=now)
             return JsonResponse(sprint.api_data, safe=False)
         except Sprint.DoesNotExist:
-            return HttpResponse('Trenutno ni aktiven noben sprint!', 404)
+            return HttpResponse('Trenutno ni aktiven noben sprint!', status=404)
