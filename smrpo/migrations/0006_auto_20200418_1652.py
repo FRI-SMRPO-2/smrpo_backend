@@ -12,11 +12,6 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='story',
-            name='all_tasks_finished',
-            field=models.BooleanField(default=False),
-        ),
-        migrations.AddField(
-            model_name='story',
             name='rejection_comment',
             field=models.TextField(blank=True, null=True),
         ),
