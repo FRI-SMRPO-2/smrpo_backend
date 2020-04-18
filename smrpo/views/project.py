@@ -19,7 +19,7 @@ class ProjectsView(APIView):
             projects = Project.objects.all()
         else:
             # Filter projects so that user can see only their projects
-            projects = Project.objects.filter(projectuser__user=user)
+            projects = Project.objects.filter(Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user))
 
         if request.GET.get('names'):
             projects = list(projects.values('id', 'name'))
