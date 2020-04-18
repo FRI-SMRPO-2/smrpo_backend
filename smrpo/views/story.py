@@ -29,7 +29,7 @@ class StoriesView(APIView):
                 return HttpResponse('User is forbidden to access this resource.', status=403)
 
         # get all project stories
-        stories = Story.objects.filter(project_id=project_id)
+        stories = Story.objects.filter(project_id=project_id).distinct()
 
         # divide stories into 3 sections
         realized = stories.filter(realized=True)
