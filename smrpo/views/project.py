@@ -16,10 +16,11 @@ class ProjectsView(APIView):
 
         if user.is_superuser:
             # Get user's projects, only superuser can view all projects
-            projects = Project.objects.all()
+            projects = Project.objects.all().distinct()
         else:
             # Filter projects so that user can see only their projects
-            projects = Project.objects.filter(Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user))
+            projects = Project.objects.filter(
+                Q(scrum_master=user) | Q(product_owner=user) | Q(developers=user)).distinct()
 
         if request.GET.get('names'):
             projects = list(projects.values('id', 'name'))
