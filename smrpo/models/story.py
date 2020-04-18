@@ -37,6 +37,8 @@ class Story(models.Model):
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
     # set at the end of the sprint if all acceptance tests passed
     realized = models.BooleanField(default=False)
+    # set when all story are finished
+    all_tasks_finished = models.BooleanField(default=False)
     time_complexity = models.FloatField(null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
@@ -81,6 +83,8 @@ class Story(models.Model):
             text=self.text,
             business_value=self.business_value,
             time_complexity=self.time_complexity,
+            realized=self.realized,
+            all_tasks_finished=self.all_tasks_finished,
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,
