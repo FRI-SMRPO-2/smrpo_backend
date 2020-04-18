@@ -6,7 +6,8 @@ from smrpo.models import task, project, sprint, story, User
 
 @admin.register(task.Task)
 class TaskAdmin(admin.ModelAdmin):
-    list_filter = ('finished', 'created', 'updated')
+    list_display = ('id', 'title', 'description', 'estimated_time', 'story', 'created_by', 'created', 'updated')
+    list_filter = ('active', 'finished', 'created', 'updated')
     raw_id_fields = ('created_by', 'finished_by')
     readonly_fields = ('created', 'updated')
     search_fields = ('title',)

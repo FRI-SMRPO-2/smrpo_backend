@@ -20,6 +20,13 @@ class Sprint(models.Model):
     updated = models.DateTimeField(auto_now=True)
 
     @property
+    def is_active(self):
+        now = timezone.now().date()
+        if self.start_date <= now < self.end_date:
+            return True
+        return False
+
+    @property
     def api_data(self):
         return dict(
             id=self.id,

@@ -3,6 +3,7 @@ from django.forms import ModelForm
 
 from smrpo.models import User
 from smrpo.models.story import Story, StoryTest
+from smrpo.models.task import Task
 
 
 class UserCreateForm(UserCreationForm):
@@ -49,4 +50,25 @@ class CreateStoryForm(ModelForm):
                 tests.append(StoryTest(text=test, story=instance))
 
             StoryTest.objects.bulk_create(tests)
+        return instance
+
+
+class CreateTaskForm(ModelForm):
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'estimated_time', 'story', 'assignee', 'assignee_awaiting', 'assignee_accepted']
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(CreateTaskForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(CreateTaskForm, self).save(commit=False)
+
+        if self.user:
+            instance.created_by = self.user
+
+        if commit:
+            instance.save()
         return instance
