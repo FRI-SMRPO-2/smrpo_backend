@@ -40,6 +40,7 @@ class Story(models.Model):
     # set when all story are finished
     all_tasks_finished = models.BooleanField(default=False)
     time_complexity = models.FloatField(null=True, blank=True)
+    rejection_comment = models.TextField(null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
     sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.CASCADE, related_name='stories')
@@ -84,6 +85,7 @@ class Story(models.Model):
             business_value=self.business_value,
             time_complexity=self.time_complexity,
             realized=self.realized,
+            rejection_comment=self.rejection_comment if self.rejection_comment else None,
             all_tasks_finished=self.all_tasks_finished,
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
