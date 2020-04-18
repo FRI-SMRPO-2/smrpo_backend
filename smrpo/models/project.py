@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class Project(models.Model):
@@ -18,6 +19,11 @@ class Project(models.Model):
 
     def __str__(self):
         return self.name
+
+    @property
+    def active_sprint(self):
+        now = timezone.now().date()
+        return self.sprints.filter(start_date__lte=now, end_date__gt=now).first()
 
     @property
     def api_data(self):
