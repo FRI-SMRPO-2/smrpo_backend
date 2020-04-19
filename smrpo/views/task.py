@@ -97,7 +97,47 @@ class FinishTaskView(APIView):
         if result:
             return HttpResponse(result, status=400)
 
-        return JsonResponse(task.api_data, safe=False)
+        return JsonResponse(task.api_data)
+
+
+class AcceptTaskView(APIView):
+    """
+        Accept task
+    """
+    def put(self, request, task_id):
+        user = request.user
+
+        # check if user can access this task
+        try:
+            task = Task.objects.get(pk=task_id, story__project__developers=user)
+        except Task.DoesNotExist:
+            return HttpResponse("Naloga ne obstaja ali pa uporabnik nima pravic za dostop.", status=404)
+
+        error = task.accept(user)
+        if error:
+            return HttpResponse(error, status=400)
+
+        return JsonResponse(task.api_data)
+
+
+class DeclineTaskView(APIView):
+    """
+        Decline task
+    """
+    def put(self, request, task_id):
+        user = request.user
+
+        # check if user can access this task
+        try:
+            task = Task.objects.get(pk=task_id, story__project__developers=user)
+        except Task.DoesNotExist:
+            return HttpResponse("Naloga ne obstaja ali pa uporabnik nima pravic za dostop.", status=404)
+
+        error = task.decline(user)
+        if error:
+            return HttpResponse(error, status=400)
+
+        return JsonResponse(task.api_data)
 
 
 '''

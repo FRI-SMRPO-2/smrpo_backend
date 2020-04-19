@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils.timezone import now
 
 from smrpo.models.story import Story
 
@@ -43,6 +44,42 @@ class Task(models.Model):
 
         self.finished = True
         self.finished_by = user
+        self.save()
+
+        return None
+
+    def accept(self, user):
+        if self.finished:
+            return "Naloga je že zaključena"
+
+        # Task has already been assigned to some user
+        if self.assignee:
+            return "Naloga je že dodeljena uporabniku, zato je ni možno sprejeti."
+
+        # Task is waiting for assigned user's acception
+        if self.assignee_awaiting and user != self.assignee_awaiting:
+            return "Nalogo lahko sprejme le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee_awaiting.username)
+
+        self.assignee_accepted = now()
+        self.assignee_awaiting = None
+        self.assignee = user
+        self.save()
+
+        return None
+
+    def decline(self, user):
+        if self.finished:
+            return "Naloga je že zaključena"
+
+        # Task has already been assigned to some user
+        if self.assignee:
+            return "Naloga je že dodeljena uporabniku, zato je ni možno zavrniti."
+
+        # Task is waiting for assigned user's acception
+        if self.assignee_awaiting and user != self.assignee_awaiting:
+            return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee_awaiting.username)
+
+        self.assignee_awaiting = None
         self.save()
 
         return None

@@ -7,7 +7,7 @@ from smrpo.views.reject_stories import RejectStoriesView
 from smrpo.views.sprint import SprintsView, SprintView
 from smrpo.views.sprint_stories import SprintStoriesView
 from smrpo.views.story import StoriesView, StoryView
-from smrpo.views.task import StoryTasksView, FinishTaskView
+from smrpo.views.task import StoryTasksView, FinishTaskView, AcceptTaskView, DeclineTaskView
 from smrpo.views.token_authentication import TokenAuthenticationView
 from smrpo.views.user import UsersView, AuthUserInfoView
 
@@ -36,6 +36,8 @@ urlpatterns = [
     # Tasks
     path('story/<int:story_id>/task/', StoryTasksView.as_view(), name="story_tasks"),
     path('task/<int:task_id>/finish', FinishTaskView.as_view(), name="finish_task"),
+    path('task/<int:task_id>/accept', AcceptTaskView.as_view(), name="accept_task"),
+    path('task/<int:task_id>/decline', DeclineTaskView.as_view(), name="decline_task"),
 
     # Project story
     path('project/<int:project_id>/story/', StoriesView.as_view(), name="stories"),
