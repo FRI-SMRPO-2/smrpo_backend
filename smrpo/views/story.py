@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.utils import timezone
 from rest_framework.views import APIView
@@ -132,36 +131,3 @@ class StoryView(APIView):
             return HttpResponse("Napaka pri posodabljanju uporabniške zgodbe!", 500)
 
         return JsonResponse(story.api_data, safe=False, status=201)
-
-
-class AddStoryToSprintView(APIView):
-    def put(self, request, story_id):
-        user = request.user
-
-        try:
-            story = Story.objects.get(pk=story_id)
-        except Story.DoesNotExist:
-            return HttpResponse('Zgodba ne obstaja.', status=404)
-
-        if not user.is_superuser:
-            if not story.project.scrum_master == user:
-                return HttpResponse('Samo skrbnik metodologije lahko dodaja nove zgodbe v sprint.', status=403)
-
-        if story.realized:
-            return HttpResponse("Zgodba je že realizirana.")
-        if not story.time_complexity:
-            return HttpResponse("Zgodba še nima določene časovne zahtevnosti.", status=400)
-        if story.sprint:
-            return HttpResponse("Zgodba je že dodeljena sprintu.", status=400)
-
-        active_sprint = story.project.active_sprint
-        if not active_sprint:
-            return HttpResponse("V projektu ni aktivnega sprinta.", status=400)
-
-        try:
-            story.sprint = active_sprint
-            story.save()
-        except:
-            return HttpResponse("Napaka pri posodabljanju uporabniške zgodbe!", 500)
-
-        return JsonResponse(dict(active_sprint_id=active_sprint.id))

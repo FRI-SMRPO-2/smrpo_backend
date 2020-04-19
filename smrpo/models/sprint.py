@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models import Sum
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -28,6 +29,12 @@ class Sprint(models.Model):
         if self.start_date <= now < self.end_date:
             return True
         return False
+
+    # TODO should be velocity, but we f*cked up, it iz what it iz now
+    @property
+    def current_speed(self):
+        speed = self.stories.aggregate(sum=Sum('time_complexity'))['sum']
+        return speed if speed else 0
 
     @property
     def api_data(self):
