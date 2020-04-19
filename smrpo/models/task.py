@@ -69,17 +69,17 @@ class Task(models.Model):
 
     def decline(self, user):
         if self.finished:
-            return "Naloga je že zaključena"
-
-        # Task has already been assigned to some user
-        if self.assignee:
-            return "Naloga je že dodeljena uporabniku, zato je ni možno zavrniti."
+            return "Naloga je že zaključena."
 
         # Task is waiting for assigned user's acception
-        if self.assignee_awaiting and user != self.assignee_awaiting:
+        if self.assignee_awaiting and self.assignee_awaiting != user:
+            return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee_awaiting.username)
+
+        if self.assignee and self.assignee == user:
             return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee_awaiting.username)
 
         self.assignee_awaiting = None
+        self.assignee = None
         self.save()
 
         return None
