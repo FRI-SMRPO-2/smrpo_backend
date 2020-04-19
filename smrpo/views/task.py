@@ -72,9 +72,9 @@ class StoryTasksView(APIView):
         return JsonResponse(errors, safe=False, status=400)
 
 
-class TaskView(APIView):
+class FinishTaskView(APIView):
     """
-        Modify task
+        Finish task
     """
     def put(self, request, task_id):
         user = request.user
@@ -90,33 +90,59 @@ class TaskView(APIView):
                 "Naloga z ID-jem {0} ne obstaja ali pa uporabnik nima pravic za dostop".format(str(task_id)),
                 status=404)
 
-        data = request.data
-        title = data.get('title')
-        assignee_id = data.get('assignee_id')
-        finished = data.get('finished')
+        if task.finished:
+            return HttpResponse("Naloga je že zaključena", status=400)
 
-        if title:
-            task.title = title
-
-        if assignee_id:
-            # check if assignee is part of the current project
-            try:
-                # try to get project
-                Project.objects.filter(Q(scrum_master_id=assignee_id) | Q(product_owner_id=assignee_id) | Q(
-                    developers=assignee_id)).distinct().get(sprints__stories__tasks=task_id)
-                task.assignee_id = assignee_id
-            except Project.DoesNotExist:
-                return HttpResponse("Napaka pri posodabljanju assignee-ja")
-
-        if finished:
-            if task.finished:
-                return HttpResponse("Naloga je že zaključena", status=400)
-
-            result = task.finish(user)
-            if result:
-                return HttpResponse(result, status=400)
-
-        # save task updated task to database
-        task.save()
+        result = task.finish(user)
+        if result:
+            return HttpResponse(result, status=400)
 
         return JsonResponse(task.api_data, safe=False)
+
+
+'''
+def put(self, request, task_id):
+    user = request.user
+
+    # check if user can access this task
+    try:
+        if user.is_superuser:
+            task = Task.objects.get(pk=task_id)
+        else:
+            task = Task.objects.get(pk=task_id, story__project__developers=user)
+    except Task.DoesNotExist:
+        return HttpResponse(
+            "Naloga z ID-jem {0} ne obstaja ali pa uporabnik nima pravic za dostop".format(str(task_id)),
+            status=404)
+
+    data = request.data
+    title = data.get('title')
+    assignee_id = data.get('assignee_id')
+    finished = data.get('finished')
+
+    if title:
+        task.title = title
+
+    if assignee_id:
+        # check if assignee is part of the current project
+        try:
+            # try to get project
+            Project.objects.filter(Q(scrum_master_id=assignee_id) | Q(product_owner_id=assignee_id) | Q(
+                developers=assignee_id)).distinct().get(sprints__stories__tasks=task_id)
+            task.assignee_id = assignee_id
+        except Project.DoesNotExist:
+            return HttpResponse("Napaka pri posodabljanju assignee-ja")
+
+    if finished:
+        if task.finished:
+            return HttpResponse("Naloga je že zaključena", status=400)
+
+        result = task.finish(user)
+        if result:
+            return HttpResponse(result, status=400)
+
+    # save task updated task to database
+    task.save()
+
+    return JsonResponse(task.api_data, safe=False)
+'''
