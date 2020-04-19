@@ -54,6 +54,9 @@ class SprintStoriesView(APIView):
             return HttpResponse("Zgodbe lahko dodajaš le aktivnemu sprintu.", status=400)
 
         story_ids = request.data.get('story_ids', [])
+        if not story_ids:
+            return HttpResponse("Seznam zgodb je prazen.", status=400)
+
         stories = Story.objects.filter(pk__in=story_ids)
 
         story_errors = dict()
