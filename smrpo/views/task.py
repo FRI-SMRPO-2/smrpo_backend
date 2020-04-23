@@ -11,8 +11,8 @@ from smrpo.models.task import Task
 class StoryTasksView(APIView):
 
     """
-        Create a new task on an active sprint.
-        Only a user with Scrum Master or Developers or super user can create new tasks.
+        Create a new task on an active sprint story.
+        Only scrum master or developers or super user can create new tasks.
     """
     def post(self, request, story_id):
         user = request.user
@@ -23,7 +23,7 @@ class StoryTasksView(APIView):
         except Project.DoesNotExist:
             return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
 
-        if not story.sprint.is_active:
+        if not story.sprint or not story.sprint.is_active:
             return HttpResponse('Nalogo lahko dodaš le zgodbi aktivnega sprinta.', 400)
 
         if story.realized:
