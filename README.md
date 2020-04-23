@@ -1,35 +1,32 @@
-## SMRPO-PO2
+# SMRPO-PO2 backend
 
-### Dokumentacija
-
+## Dokumentacija
+[Dokumentacija API](doc/API.md)
 [Wiki](https://github.com/FRI-SMRPO-2/smrpo_backend/wiki/ "Wiki")
 
+### Uporabniška dokumentacija
+[Prijava v sistem](#prijava-v-sistem)\
+[Dodajanje uporabnikov](#dodajanje-uporabnikov)\
+[Dodajanje zgodb v Sprint](#dodajanje-zgodb-v-sprint)
 
-### Backend Installation
-[Django docs](https://docs.djangoproject.com/en/3.0/ "Django docs")\
-[Python virtual environment](https://docs.python-guide.org/dev/virtualenvs/)
+##### Prijava v sistem
+Uporabnik se lahko prijavi v sistem z uporabniškim imenom in geslom. 
 
-**1. Create virtual enviroment and activate it.**
+![alt text](doc/img/login.png)
 
-```
-$ pip install virtualenv
-$ virtualenv <virtualenvname> -p python3.6
-$ source <virtualenvname\>/bin/activate
-$ pip install -r requirements.txt
-```
+##### Dodajanje uporabnikov
+Administrator sistema lahko vnaša nove uporabnike v sistem.\
+S klikom na kovček (desni zgornji kot) lahko dostopa do administratorskega vmesnika.
+![alt text](doc/img/admin_btn.png)\
+Nato se s klikom na gumb **Dodaj uporabnika** odpre okno za dodajanje uporabnikov.
+Določi jim uporabniško ime in geslo, osebne podatke (ime, priimek, e-pošta) in sistemske pravice (administrator sistema, uporabnik sistema).
 
-**2. Run Django development server.**
+![alt text](doc/img/add_user.png)
 
-```
-$ source <virtualenvname>/bin/activate
-$ python manage.py migrate
-$ python manage.py runserver
-```
-### Migrations
-Everytime you create, change or delete models, you should perform next operations to create migrations in the database. 
+##### Dodajanje zgodb v Sprint
+Skrbnik metodologije lahko dodaja nove zgodbe v Sprint.\
+Na zavihku **Product backlog** v desnem zgornjem kotu klikne na gumb *Izbira zgodb za aktivni sprint*.
+Nato izbere dogovorjeno podmnožico zgodb v seznamu zahtev in jih dodeli Sprintu.
+Izbere lahko le tiste zgodbe, ki že imajo ocenjeno časovno zahtevnost in še niso bile realizirane.
 
-```
-$ python manage.py makemigrations
-$ python manage.py migrate
-```
-Make sure to commit & push migrations!
+![alt text](doc/img/story_to_sprint.png)
