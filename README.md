@@ -1,8 +1,8 @@
 ## SMRPO-PO2
 
-## Dokumentacija
+### Dokumentacija
 
-[Wiki](https://github.com/FRI-SMRPO-2/smrpo_backend/wiki/ "Wiki")\
+[Wiki](https://github.com/FRI-SMRPO-2/smrpo_backend/wiki/ "Wiki")
 
 
 ### Backend Installation
