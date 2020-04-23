@@ -10,12 +10,12 @@
 [Dodajanje uporabnikov](#dodajanje-uporabnikov)\
 [Dodajanje zgodb v Sprint](#dodajanje-zgodb-v-sprint)
 
-##### Prijava v sistem
+#### Prijava v sistem
 Uporabnik se lahko prijavi v sistem z uporabniškim imenom in geslom. 
 
 ![alt text](doc/img/login.png)
 
-##### Dodajanje uporabnikov
+#### Dodajanje uporabnikov
 Administrator sistema lahko vnaša nove uporabnike v sistem.\
 S klikom na kovček (desni zgornji kot) lahko dostopa do administratorskega vmesnika.
 ![alt text](doc/img/admin_btn.png)\
@@ -24,7 +24,7 @@ Določi jim uporabniško ime in geslo, osebne podatke (ime, priimek, e-pošta) i
 
 ![alt text](doc/img/add_user.png)
 
-##### Dodajanje zgodb v Sprint
+#### Dodajanje zgodb v Sprint
 Skrbnik metodologije lahko dodaja nove zgodbe v Sprint.\
 Na zavihku **Product backlog** v desnem zgornjem kotu klikne na gumb *Izbira zgodb za aktivni sprint*.
 Nato izbere dogovorjeno podmnožico zgodb v seznamu zahtev in jih dodeli Sprintu.
