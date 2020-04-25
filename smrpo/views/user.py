@@ -81,3 +81,18 @@ class AuthUserInfoView(APIView):
                 is_superuser=user.is_superuser
             )
         )
+
+
+class AuthUserTasksView(APIView):
+    """
+        Return authenticated user's assigned tasks.
+    """
+    def get(self, request):
+        user = request.user
+
+        return JsonResponse(dict(
+                assigned_tasks=[t.api_data for t in user.assignee.all()],
+                assignee_awaiting_tasks=[t.api_data for t in user.assignee_awaiting.all()]
+            )
+        )
+
