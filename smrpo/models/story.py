@@ -37,8 +37,6 @@ class Story(models.Model):
     business_value = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(100)])
     # set at the end of the sprint if all acceptance tests passed
     realized = models.BooleanField(default=False)
-    # set when all story are finished
-    all_tasks_finished = models.BooleanField(default=False)
     time_complexity = models.FloatField(null=True, blank=True)
     rejection_comment = models.TextField(null=True, blank=True)
 
@@ -56,6 +54,9 @@ class Story(models.Model):
 
     def __str__(self):
         return self.name
+
+    def are_all_tasks_finished(self):
+        return not self.tasks.filter(finished=False).exists()
 
     def get_unassigned_tasks(self):
         # exclude finished, exclude active, include tasks with assignee null
@@ -86,7 +87,7 @@ class Story(models.Model):
             time_complexity=self.time_complexity,
             realized=self.realized,
             rejection_comment=self.rejection_comment if self.rejection_comment else None,
-            all_tasks_finished=self.all_tasks_finished,
+            all_tasks_finished=self.are_all_tasks_finished(),
             priority=self.priority.api_data,
             tests=list(self.tests.values('id', 'text')),
             project_id=self.project_id,
