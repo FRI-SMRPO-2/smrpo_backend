@@ -26,7 +26,7 @@ class Sprint(models.Model):
     @property
     def is_active(self):
         now = timezone.now().date()
-        if self.start_date <= now < self.end_date:
+        if self.start_date <= now <= self.end_date:
             return True
         return False
 
