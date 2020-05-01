@@ -23,7 +23,7 @@ class Project(models.Model):
     @property
     def active_sprint(self):
         now = timezone.now().date()
-        return self.sprints.filter(start_date__lte=now, end_date__gt=now).first()
+        return self.sprints.filter(start_date__lte=now, end_date__gte=now).first()
 
     @property
     def api_data(self):
