@@ -25,7 +25,7 @@ class RejectStoriesView(APIView):
         story_ids = request.data.get('stories')
 
         if not story_ids or not isinstance(story_ids, list):
-            return HttpResponse("IUporabniškihe zgodbe niso podane ali pa niso podane kot seznam", status=400)
+            return HttpResponse("Uporabniškihe zgodbe niso podane ali pa niso podane kot seznam", status=400)
 
         stories = []
         for item in story_ids:
@@ -58,6 +58,9 @@ class RejectStoriesView(APIView):
 
             # remove rejection comment if it has been rejected before
             story.rejection_comment = comment
+
+            # remove story from sprint
+            story.sprint = None
 
             # save updated story
             story.save()
