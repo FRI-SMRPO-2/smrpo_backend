@@ -30,7 +30,7 @@ class StoryTasksView(APIView):
             return HttpResponse('Zgodba je že realizirana, zato ji naloge ni mogoče dodati.', 400)
 
         if not user.is_superuser:
-            if not (story.sprint.project.product_owner == user or not story.sprint.project.developers.filter(users=user).exists()):
+            if not (story.sprint.project.product_owner == user or not story.sprint.project.developers.filter(pk=user.id).exists()):
                 return HttpResponse(
                     'Samo skrbnik metodlogije, člani razvojne skupine ali administrator lahko dodajajo naloge zgodbam aktivnega sprinta.',
                     status=403
