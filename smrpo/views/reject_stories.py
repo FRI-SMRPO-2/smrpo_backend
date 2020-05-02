@@ -49,7 +49,7 @@ class RejectStoriesView(APIView):
                 # all checks passed, add to list with comment
                 stories.append((story, comment))
             except Story.DoesNotExist:
-                return HttpResponse("Uporabniša zgodba {0} ne obstaja ali pa ni del trenutnega sprinta".format(str(story_id)), status=404)
+                return HttpResponse("Uporabniška zgodba {0} ne obstaja ali pa ni del trenutnega sprinta".format(str(story_id)), status=404)
 
         # update status of all the stories
         for (story, comment) in stories:
