@@ -8,4 +8,5 @@ class Command(BaseCommand):
     def handle(self, **options):
         now = timezone.now()
         unfinished_stories = Story.objects.filter(sprint__isnull=False, sprint__end_date__lt=now, realized__isnull=True)
-        unfinished_stories.update(sprint=None)
+        updated = unfinished_stories.update(sprint=None)
+        print(f"Cleaned {updated} unfinished stories.")
