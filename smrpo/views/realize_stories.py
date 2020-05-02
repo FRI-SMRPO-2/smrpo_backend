@@ -41,7 +41,7 @@ class RealizeStoriesView(APIView):
                     return HttpResponse("Zgodba {0} je že realizirana".format(str(story_id)), status=400)
 
                 # check if story is finished
-                if not story.all_tasks_finished():
+                if not story.are_all_tasks_finished():
                     return HttpResponse("Zgodba {0} še nima zaključenih vseh nalog".format(str(story_id)), status=400)
 
                 # all checks passed, add to list
