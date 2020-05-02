@@ -39,8 +39,8 @@ class RejectStoriesView(APIView):
 
                 # check if story is already rejected
                 # if story.rejection_comment is not None or story.rejection_comment != "":
-                if story.rejection_comment:
-                    return HttpResponse("Zgodba {0} je že zavrnjena".format(str(story_id)), status=400)
+                # if story.rejection_comment:
+                #    return HttpResponse("Zgodba {0} je že zavrnjena".format(str(story_id)), status=400)
 
                 # check if story is already realized
                 if story.realized:
