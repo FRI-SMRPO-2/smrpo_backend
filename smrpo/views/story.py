@@ -121,7 +121,7 @@ class StoryView(APIView):
             story.realized = realized
 
         if priority:
-            story.priority = priority
+            story.priority_id = priority
 
         # is not None - because 0 is equal to false in Python
         if time_complexity is not None:
