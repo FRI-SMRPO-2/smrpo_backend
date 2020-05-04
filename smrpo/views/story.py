@@ -106,6 +106,7 @@ class StoryView(APIView):
         business_value = data.get('business_value')
         realized = data.get('realized')
         time_complexity = data.get('time_complexity')
+        priority = data.get('priority')
 
         if name:
             story.name = name
@@ -119,10 +120,15 @@ class StoryView(APIView):
         if realized:
             story.realized = realized
 
+        if priority:
+            story.priority_id = priority
+
         # is not None - because 0 is equal to false in Python
         if time_complexity is not None:
             if time_complexity <= 0.0:
-                return HttpResponse("Časovna zahtevnost mora biti večja od 0!", status=400)
+                return HttpResponse("Časovna zahtevnost mora biti večja od 0 točk!", status=400)
+            if time_complexity > 200:
+                return HttpResponse("Časovna zahtevnost ne sme biti večja od 200 točk!", status=400)
             story.time_complexity = time_complexity
 
         try:

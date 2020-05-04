@@ -30,7 +30,7 @@ class StoryTasksView(APIView):
             return HttpResponse('Zgodba je že realizirana, zato ji naloge ni mogoče dodati.', 400)
 
         if not user.is_superuser:
-            if not (story.sprint.project.product_owner == user or not story.sprint.project.developers.filter(pk=user.id).exists()):
+            if not (story.sprint.project.scrum_master == user or not story.sprint.project.developers.filter(pk=user.id).exists()):
                 return HttpResponse(
                     'Samo skrbnik metodlogije, člani razvojne skupine ali administrator lahko dodajajo naloge zgodbam aktivnega sprinta.',
                     status=403
@@ -39,9 +39,11 @@ class StoryTasksView(APIView):
         if data.get('estimated_time'):
             try:
                 if data.get('estimated_time') <= 0:
-                    return HttpResponse('Naloga mora imeti oceno časa za dokončanje, ki je večja od 0.', status=400)
+                    return HttpResponse('Časovna zahtevnost naloge mora biti večja od 0 ur.', status=400)
+                if data.get('estimated_time') > 200:
+                    return HttpResponse('Časovna zahtevnost naloge ne sme biti večja od 200 ur.', status=400)
             except:
-                return HttpResponse('Naloga mora imeti oceno časa za dokončanje, ki je večja od 0.', status=400)
+                return HttpResponse('Časovna zahtevnost naloge mora biti med 0 in 200 ur.', status=400)
 
         # If assignee awaiting is current user, then make assignee accepted
         asignee_awaiting_id = data.get('assignee_awaiting_id')

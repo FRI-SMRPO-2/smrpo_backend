@@ -52,7 +52,7 @@ class Sprint(models.Model):
 
 
 @receiver(pre_save, sender=Sprint)
-def task_pre_save(sender, instance, *args, **kwargs):
+def sprint_pre_save(sender, instance, *args, **kwargs):
     start = instance.start_date
     end = instance.end_date
 
