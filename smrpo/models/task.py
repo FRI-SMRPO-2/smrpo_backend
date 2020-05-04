@@ -35,6 +35,9 @@ class Task(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        unique_together = ['title', 'story']
+
     def __str__(self):
         return "{} - {} ({})".format(self.title, self.story.name, self.created_by)
 
