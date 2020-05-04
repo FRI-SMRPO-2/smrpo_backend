@@ -85,6 +85,7 @@ class Story(models.Model):
     def api_data(self):
         return dict(
             id=self.id,
+            unique_by_project_count_id=self.unique_by_project_count_id,
             name=self.name,
             text=self.text,
             business_value=self.business_value,
