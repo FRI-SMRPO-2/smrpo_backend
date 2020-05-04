@@ -106,6 +106,7 @@ class StoryView(APIView):
         business_value = data.get('business_value')
         realized = data.get('realized')
         time_complexity = data.get('time_complexity')
+        priority = data.get('priority')
 
         if name:
             story.name = name
@@ -118,6 +119,9 @@ class StoryView(APIView):
 
         if realized:
             story.realized = realized
+
+        if priority:
+            story.priority = priority
 
         # is not None - because 0 is equal to false in Python
         if time_complexity is not None:
