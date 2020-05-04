@@ -1,6 +1,8 @@
 from django.conf import settings
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from smrpo.models.project import Project
 from smrpo.models.sprint import Sprint
@@ -44,7 +46,7 @@ class Story(models.Model):
     sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.CASCADE, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
-    unique_by_project_count_id = models.IntegerField()
+    unique_by_project_count_id = models.IntegerField(null=True, blank=True)
 
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, blank=True, related_name='created_stories')
     created = models.DateTimeField(auto_now_add=True)
@@ -103,3 +105,12 @@ class Story(models.Model):
                 'active': Story.get_api_data(self.get_active_tasks())
             },
         )
+
+
+@receiver(post_save, sender=Story)
+def story_post_save(sender, instance, created, **kwargs):
+
+    if created:
+        custom_id = instance.project.stories.count()
+        instance.unique_by_project_count_id = custom_id
+        instance.save()
