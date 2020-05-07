@@ -55,10 +55,10 @@ class SprintStoriesView(APIView):
 
         if not active_sprint:
             return HttpResponse("V projektu ni aktivnega sprinta.", status=400)
-        logger.info("sprint")
-        logger.info(sprint.api_data)
-        logger.info("active sprint")
-        logger.info(active_sprint.api_data)
+        logger.error("sprint")
+        logger.error(sprint.api_data)
+        logger.error("active sprint")
+        logger.error(active_sprint.api_data)
         if sprint != active_sprint:
             return HttpResponse("Zgodbe lahko dodajaš le aktivnemu sprintu.", status=400)
 
