@@ -48,8 +48,13 @@ class SprintStoriesView(APIView):
                 return HttpResponse('Samo skrbnik metodologije lahko dodaja zgodbe v sprint.', status=403)
 
         active_sprint = sprint.project.active_sprint
+
         if not active_sprint:
             return HttpResponse("V projektu ni aktivnega sprinta.", status=400)
+        print("sprint")
+        print(sprint.api_data)
+        print("active sprint")
+        print(active_sprint.api_data)
         if sprint != active_sprint:
             return HttpResponse("Zgodbe lahko dodajaš le aktivnemu sprintu.", status=400)
 
