@@ -19,7 +19,10 @@ class Command(BaseCommand):
         # Only temporary
         tasks = Task.objects.filter(story__sprint__end_date__lt=now, assignee_awaiting__isnull=False)
         updated = tasks.update(assignee_awaiting=None)
-        print(f"Cleaned {updated} unfinished tasks.")
+        print(f"Cleaned {updated} unfinished tasks with obsolete sprint.")
+        tasks = Task.objects.filter(story__sprint__isnull=True, assignee_awaiting__isnull=False)
+        updated = tasks.update(assignee_awaiting=None)
+        print(f"Cleaned {updated} unfinished tasks without a sprint.")
 
         for story in unfinished_stories:
             story.tasks.filter(assignee_awaiting__isnull=False).update(assignee_awaiting=None)
