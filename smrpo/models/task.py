@@ -78,7 +78,7 @@ class Task(models.Model):
         if self.assignee_awaiting and self.assignee_awaiting != user:
             return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee_awaiting.username)
 
-        if self.assignee and self.assignee == user:
+        if self.assignee and self.assignee != user:
             return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee.username)
 
         self.assignee_awaiting = None
