@@ -99,8 +99,48 @@ class ProjectView(APIView):
 
     def put(self, request, pk):
         user = request.user
+        data = request.data
 
-        return JsonResponse("OK", safe=False)
+        # Check if user is a Scrum Master.
+        user_is_scrum_master = Project.objects.filter(
+            pk=pk,
+            scrum_master=user,
+        ).exists()
+
+        if not user.is_superuser and not user_is_scrum_master:
+            return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        # check if object exists
+        project = get_object_or_404(Project, pk=pk)
+
+        # Extract fields from request
+        name = data.get('name')
+        scrum_master_id = data.get('scrum_master_id')
+        product_owner_id = data.get('product_owner_id')
+        developer_ids = data.get('developer_ids')
+
+        if not name:
+            return JsonResponse({'message': 'Ime ni nastavljeno'}, status=400)
+
+        if not scrum_master_id:
+            return JsonResponse({'message': 'Scrum master ni nastavljen'}, status=400)
+
+        if not product_owner_id:
+            return JsonResponse({'message': 'Product owner ni nastavljen'}, status=400)
+
+        if not isinstance(developer_ids, list):
+            return JsonResponse({'message': 'Developers mora biti seznam'}, status=400)
+
+        try:
+            project.name = name
+            project.scrum_master_id = scrum_master_id
+            project.product_owner_id = product_owner_id
+            project.developers.set(developer_ids)
+            project.save()
+        except:
+            return HttpResponse("Napaka pri posodabljanju projekta!", status=500)
+
+        return JsonResponse(project.api_data, safe=False, status=200)
 
 class AuthProjectUserView(APIView):
     """
