@@ -7,6 +7,13 @@ from smrpo.models.project import Project
 
 class DocumentationView(APIView):
     """
+        Get project documentation in .txt format
+    """
+
+    def get(self, request, project_id):
+        return JsonResponse("TXT FILE", safe=False, status=200)
+
+    """
         Change project documentation
     """
     def put(self, request, project_id):
