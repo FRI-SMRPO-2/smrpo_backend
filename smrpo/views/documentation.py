@@ -11,7 +11,21 @@ class DocumentationView(APIView):
     """
 
     def get(self, request, project_id):
-        return JsonResponse("TXT FILE", safe=False, status=200)
+        user = request.user
+
+        # get project
+        project = get_object_or_404(Project, pk=project_id)
+
+        # check if user is part of the project
+        if not user.is_superuser:
+            is_developer = project.developers.all().filter(pk=user.api_data()['id']).exists()
+            if not (project.product_owner == user or project.scrum_master == user or is_developer):
+                return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        filename = "documentation.txt"
+        response = HttpResponse(project.documentation, content_type="text/plain; charset=UTF-8")
+        response['Content-Disposition'] = ('attachment; filename={0}'.format(filename))
+        return response
 
     """
         Change project documentation
