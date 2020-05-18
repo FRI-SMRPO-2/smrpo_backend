@@ -37,4 +37,5 @@ class Project(models.Model):
             created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
+            posts=self.posts
         )
