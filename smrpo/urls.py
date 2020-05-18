@@ -21,7 +21,7 @@ urlpatterns = [
 
     # Project
     path('project/', ProjectsView.as_view(), name="projects"),
-    path('project/<int:pk>/', ProjectView.as_view(), name="project"),
+    path('project/<int:pk>', ProjectView.as_view(), name="project"),
     path('project/<int:pk>/user/me/', AuthProjectUserView.as_view(), name="auth_project_user"),
 
     # Sprints

@@ -97,6 +97,10 @@ class ProjectView(APIView):
 
         return JsonResponse(project.api_data, safe=False)
 
+    def put(self, request, pk):
+        user = request.user
+
+        return JsonResponse("OK", safe=False)
 
 class AuthProjectUserView(APIView):
     """
