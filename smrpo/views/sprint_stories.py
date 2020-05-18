@@ -1,10 +1,14 @@
-from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 
 from smrpo.models.project import Project
 from smrpo.models.sprint import Sprint
 from smrpo.models.story import Story
+
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 class SprintStoriesView(APIView):
@@ -48,8 +52,13 @@ class SprintStoriesView(APIView):
                 return HttpResponse('Samo skrbnik metodologije lahko dodaja zgodbe v sprint.', status=403)
 
         active_sprint = sprint.project.active_sprint
+
         if not active_sprint:
             return HttpResponse("V projektu ni aktivnega sprinta.", status=400)
+        logger.error("sprint")
+        logger.error(sprint.api_data)
+        logger.error("active sprint")
+        logger.error(active_sprint.api_data)
         if sprint != active_sprint:
             return HttpResponse("Zgodbe lahko dodajaš le aktivnemu sprintu.", status=400)
 
