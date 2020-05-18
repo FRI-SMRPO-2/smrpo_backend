@@ -3,6 +3,7 @@ from django.db import IntegrityError
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from django.utils.dateparse import parse_date
 from rest_framework.views import APIView
 
@@ -101,4 +102,55 @@ class SprintView(APIView):
         return JsonResponse(sprint.api_data, safe=False)
     
     def put(self, request, project_id, sprint_id):
-        return JsonResponse("OK", safe=False, status=200)
+        user = request.user
+        data = request.data
+
+        # Check if user is a Scrum Master.
+        user_is_scrum_master = Project.objects.filter(
+            id=project_id,
+            scrum_master=user,
+        ).exists()
+
+        if not user.is_superuser and not user_is_scrum_master:
+            return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        # get sprint
+        sprint = get_object_or_404(Sprint, pk=sprint_id, project_id=project_id)
+
+        if sprint.end_date < timezone.now().date():
+            return HttpResponse("Sprint se je že končal!", status=400)
+
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        expected_speed = data.get('expected_speed')
+
+        if not start_date or not end_date or not expected_speed:
+            return JsonResponse({'message': 'Nekatera polja niso vnesena.'}, status=400)
+
+        # Get fields from request
+        try:
+            start_date = parse_date(data.get('start_date'))
+            end_date = parse_date(data.get('end_date'))
+            expected_speed = float(data.get('expected_speed'))
+        except:
+            return JsonResponse({'message': 'Eno od polj je v napačnem formatu.'}, status=400)
+
+        # update sprint
+        try:
+            sprint.start_date = start_date
+            sprint.end_date = end_date
+            sprint.expected_speed = expected_speed
+            sprint.save()
+        except ValidationError as e:
+            return JsonResponse({'message': e.message}, status=400)
+        except ValueError as e:
+            return JsonResponse({'message': str(e)}, status=400)
+        except IntegrityError:
+            return JsonResponse({'message': 'Projekt s tem ID-jem ne obstaja.'}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': 'Napaka pri dodajanju sprinta.'}, status=400)
+
+        return JsonResponse(sprint.api_data, safe=False, status=200)
+
+    def delete(self, request, project_id, sprint_id):
+        return JsonResponse("DELETE", safe=False, status=200)

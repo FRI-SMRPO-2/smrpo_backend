@@ -66,6 +66,6 @@ def sprint_pre_save(sender, instance, *args, **kwargs):
         raise ValueError('Hitrost sprinta mora biti večja od 0.')
 
     # check if sprints overlap
-    overlapping_sprints = Sprint.objects.filter(project=instance.project, start_date__lte=end, end_date__gte=start).exists()
+    overlapping_sprints = Sprint.objects.exclude(pk=instance.id).filter(project=instance.project, start_date__lte=end, end_date__gte=start).exists()
     if overlapping_sprints:
             raise ValidationError('Datum sprinta se prekriva z že obstoječim.')
