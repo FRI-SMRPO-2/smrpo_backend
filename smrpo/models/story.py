@@ -43,7 +43,7 @@ class Story(models.Model):
     rejection_comment = models.TextField(null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
-    sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.CASCADE, related_name='stories')
+    sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.SET_NULL, related_name='stories')
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
     unique_by_project_count_id = models.IntegerField(null=True, blank=True)

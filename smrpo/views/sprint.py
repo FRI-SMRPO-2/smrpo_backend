@@ -117,8 +117,8 @@ class SprintView(APIView):
         # get sprint
         sprint = get_object_or_404(Sprint, pk=sprint_id, project_id=project_id)
 
-        if sprint.end_date < timezone.now().date():
-            return HttpResponse("Sprint se je že končal!", status=400)
+        if sprint.start_date <= timezone.now().date():
+            return HttpResponse("Sprint je v teku ali se je že končal!", status=400)
 
         start_date = data.get('start_date')
         end_date = data.get('end_date')
@@ -153,4 +153,23 @@ class SprintView(APIView):
         return JsonResponse(sprint.api_data, safe=False, status=200)
 
     def delete(self, request, project_id, sprint_id):
-        return JsonResponse("DELETE", safe=False, status=200)
+        user = request.user
+
+        # Check if user is a Scrum Master.
+        user_is_scrum_master = Project.objects.filter(
+            id=project_id,
+            scrum_master=user,
+        ).exists()
+
+        if not user.is_superuser and not user_is_scrum_master:
+            return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        # get sprint
+        sprint = get_object_or_404(Sprint, pk=sprint_id, project_id=project_id)
+
+        if sprint.start_date <= timezone.now().date():
+            return HttpResponse("Sprint je v teku ali se je že končal!", status=400)
+
+        sprint.delete()
+
+        return HttpResponse(status=204)
