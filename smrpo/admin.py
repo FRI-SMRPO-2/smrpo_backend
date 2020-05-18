@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from smrpo.models import task, project, sprint, story, User
+from smrpo.models import task, project, sprint, story, post, User
 
 
 @admin.register(task.Task)
@@ -60,6 +60,10 @@ class StoryTestAdmin(admin.ModelAdmin):
     list_display = ('id', 'text', 'story')
     readonly_fields = ('story',)
 
+
+@admin.register(post.Post)
+class PostAdmin(admin.ModelAdmin):
+    list_display = ('id', 'text')
 
 class CustomUserAdmin(UserAdmin):
     model = User

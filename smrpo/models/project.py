@@ -37,5 +37,5 @@ class Project(models.Model):
             created_by=self.created_by.username,
             created=self.created,
             updated=self.updated,
-            posts=self.posts
+            posts=[post.api_data for post in self.posts.all()]
         )
