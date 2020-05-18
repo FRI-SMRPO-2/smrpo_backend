@@ -26,7 +26,7 @@ urlpatterns = [
 
     # Sprints
     path('project/<int:project_id>/sprint/', SprintsView.as_view(), name="sprints"),
-    path('project/<int:project_id>/sprint/<int:sprint_id>/', SprintView.as_view(), name="sprint"),
+    path('project/<int:project_id>/sprint/<int:sprint_id>', SprintView.as_view(), name="sprint"),
     path('project/<int:project_id>/sprint/active', ActiveSprintView.as_view(), name="active_sprint"),
 
     # User story

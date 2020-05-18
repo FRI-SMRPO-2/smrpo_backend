@@ -99,3 +99,6 @@ class SprintView(APIView):
                 return HttpResponse("Sprint ne obstaja", status=404)
 
         return JsonResponse(sprint.api_data, safe=False)
+    
+    def put(self, request, project_id, sprint_id):
+        return JsonResponse("OK", safe=False, status=200)
