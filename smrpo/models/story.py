@@ -75,7 +75,7 @@ class Story(models.Model):
 
     def get_active_tasks(self):
         # exclude finished, return tasks with active work sessions
-        return self.tasks.exclude(finished=True).filter(work_sessions__end__isnull=True)
+        return self.tasks.exclude(finished=True).filter(work_sessions__active__isnull=False)
 
     @staticmethod
     def get_api_data(tasks):

@@ -4,23 +4,32 @@ from django.utils.timezone import now
 
 
 class WorkSession(models.Model):
-    start = models.DateTimeField()
-    end = models.DateTimeField(null=True, blank=True)
+    date = models.DateField()
+    active = models.DateTimeField(null=True, blank=True)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     task = models.ForeignKey('smrpo.Task', on_delete=models.CASCADE, related_name='work_sessions')
+
+    total_seconds = models.IntegerField(default=0)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "{} - {} ({}: {})".format(self.start, self.end or "/", self.user.username, self.task.title)
+        return "{} - {} ({}: {})".format(self.date, self.active or "/", self.user.username, self.task.title)
 
     class Meta:
-        ordering = ('start', )
+        ordering = ('date', )
+
+    def start_work(self):
+        self.active = now()
+        self.save()
+        return True
 
     def stop_work(self):
-        self.end = now()
+        seconds = (now() - self.active).total_seconds()
+        self.total_seconds += seconds
+        self.active = None
         self.save()
         return True
 
@@ -28,8 +37,9 @@ class WorkSession(models.Model):
     def api_data(self):
         return dict(
             id=self.id,
-            start=self.start,
-            end=self.end,
+            date=self.date,
+            active=self.active,
+            total_seconds=self.total_seconds,
             user=self.user.username,
             user_id=self.user.id,
             task=self.task.title,

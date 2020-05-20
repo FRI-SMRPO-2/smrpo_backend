@@ -177,7 +177,7 @@ class StopWorkTaskView(APIView):
             return HttpResponse("Naloga ne obstaja ali pa uporabnik ni določen za delo na njej.", status=404)
 
         # Get assignee work session and stop it
-        active_work_session = task.assignee_work_session
+        active_work_session = task.active_work_session
         if not active_work_session:
             return HttpResponse("Na nalogi trenutno delo ne poteka, zato dela ni mogoče zaključiti.", status=400)
 

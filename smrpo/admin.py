@@ -15,8 +15,8 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(work_session.WorkSession)
 class WorkSessionAdmin(admin.ModelAdmin):
-    list_display = ('id', 'start', 'end', 'user', 'task', 'created', 'updated')
-    list_filter = ('start', 'end', 'created', 'updated')
+    list_display = ('id', 'user', 'task', 'date', 'active', 'total_seconds', 'created', 'updated')
+    list_filter = ('date', 'active', 'created', 'updated')
     raw_id_fields = ('task', 'user')
     readonly_fields = ('created', 'updated')
     search_fields = ('user__username', 'task__title')

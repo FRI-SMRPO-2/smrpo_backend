@@ -51,7 +51,7 @@ class Task(models.Model):
         self.save()
 
         # Get assignee work session and stop it
-        active_work_session = self.assignee_work_session
+        active_work_session = self.active_work_session
         if active_work_session:
             active_work_session.stop_work()
 
@@ -84,14 +84,20 @@ class Task(models.Model):
         if not self.assignee:
             return "Naloga mora imeti dodeljenega uporabnika, da se lahko prične z delom."
 
-        if self.work_sessions.filter(end__isnull=True, user=self.assignee).exists():
+        if self.work_sessions.filter(active__isnull=True, user=self.assignee).exists():
             return "Dela na tej nalogi že poteka."
 
-        work_session = WorkSession.objects.create(
-            start=now(),
+        work_session, created = WorkSession.objects.get_or_create(
+            date=now(),
             user=self.assignee,
             task=self,
+            defaults=dict(
+                active=now()
+            )
         )
+
+        if not created:
+            work_session.start_work()
 
         if not work_session:
             return 'Napaka pri začetku dela.'
@@ -99,8 +105,8 @@ class Task(models.Model):
         return None
 
     @property
-    def assignee_work_session(self):
-        return self.work_sessions.filter(end__isnull=True, user=self.assignee).last()
+    def active_work_session(self):
+        return self.work_sessions.filter(active__isnull=True, user=self.assignee).last()
 
     def decline(self, user):
         if self.finished:
@@ -114,7 +120,7 @@ class Task(models.Model):
             return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee.username)
 
         # Get assignee work session and stop it
-        active_work_session = self.assignee_work_session
+        active_work_session = self.active_work_session
         if active_work_session:
             active_work_session.stop_work()
 
@@ -126,7 +132,7 @@ class Task(models.Model):
 
     @property
     def api_data(self):
-        active_work_session = self.assignee_work_session
+        active_work_session = self.active_work_session
 
         return dict(
             id=self.id,
