@@ -9,3 +9,5 @@ djangorestframework
 # gunicorn
 mysqlclient
 whitenoise
+django-qsstats-magic
+python-dateutil
