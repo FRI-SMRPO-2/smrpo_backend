@@ -36,8 +36,8 @@ class TaskWorkSessionsView(APIView):
         time_series = qss.time_series(datetime.strptime(start_date, "%Y-%m-%d"), datetime.strptime(end_date, "%Y-%m-%d"))
 
         return JsonResponse(
-            [t[1]/3600 for t in time_series],
-            # [[t[0].strftime("%Y-%m-%d"), t[1]/3600] for t in time_series],
+            # [t[1]/3600 for t in time_series],
+            [[t[0].strftime("%Y-%m-%d"), t[1]/3600] for t in time_series],
             safe=False,
             status=400
         )
