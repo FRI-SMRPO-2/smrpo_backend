@@ -6,6 +6,7 @@ from smrpo.forms import CreateTaskForm
 from smrpo.models.project import Project
 from smrpo.models.story import Story
 from smrpo.models.task import Task
+from smrpo.models.work_session import WorkSession
 
 
 class StoryTasksView(APIView):
@@ -155,6 +156,10 @@ class StartWorkTaskView(APIView):
             task = Task.objects.get(pk=task_id, assignee=user)
         except Task.DoesNotExist:
             return HttpResponse("Naloga ne obstaja ali pa uporabnik ni določen za delo na njej.", status=404)
+
+        # Check if user is already working on some task, he can only work on one task at a time
+        if WorkSession.objects.exclude(task=task).filter(active__isnull=False, user=user).exists():
+            return HttpResponse("Uporabnik že dela na drugi nalogi.", status=400)
 
         error = task.start_work_session()
         if error:
