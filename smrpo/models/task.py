@@ -106,7 +106,7 @@ class Task(models.Model):
 
     @property
     def active_work_session(self):
-        return self.work_sessions.filter(active__isnull=True, user=self.assignee).last()
+        return self.work_sessions.filter(active__isnull=False, user=self.assignee).last()
 
     def decline(self, user):
         if self.finished:
