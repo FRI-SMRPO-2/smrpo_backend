@@ -95,6 +95,7 @@ class FinishTaskView(APIView):
         if task.finished:
             return HttpResponse("Naloga je že zaključena", status=400)
 
+        # Stop work session
         result = task.finish(user)
         if result:
             return HttpResponse(result, status=400)
@@ -139,6 +140,48 @@ class DeclineTaskView(APIView):
         if error:
             return HttpResponse(error, status=400)
 
+        return JsonResponse(task.api_data)
+
+
+class StartWorkTaskView(APIView):
+    """
+        Start working on a task
+    """
+    def put(self, request, task_id):
+        user = request.user
+
+        # check if user can access this task
+        try:
+            task = Task.objects.get(pk=task_id, assignee=user)
+        except Task.DoesNotExist:
+            return HttpResponse("Naloga ne obstaja ali pa uporabnik ni določen za delo na njej.", status=404)
+
+        error = task.start_work_session()
+        if error:
+            return HttpResponse(error, status=400)
+
+        return JsonResponse(task.api_data)
+
+
+class StopWorkTaskView(APIView):
+    """
+        Stop working on a task
+    """
+    def put(self, request, task_id):
+        user = request.user
+
+        # check if user can access this task
+        try:
+            task = Task.objects.get(pk=task_id, assignee=user)
+        except Task.DoesNotExist:
+            return HttpResponse("Naloga ne obstaja ali pa uporabnik ni določen za delo na njej.", status=404)
+
+        # Get assignee work session and stop it
+        active_work_session = task.assignee_work_session
+        if not active_work_session:
+            return HttpResponse("Na nalogi trenutno delo ne poteka, zato dela ni mogoče zaključiti.", status=400)
+
+        active_work_session.stop_work()
         return JsonResponse(task.api_data)
 
 

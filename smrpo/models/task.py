@@ -6,6 +6,8 @@ from smrpo.models.story import Story
 
 from django.core.exceptions import ValidationError
 
+from smrpo.models.work_session import WorkSession
+
 
 def higher_than_zero(value):
     if value <= 0:
@@ -19,7 +21,6 @@ class Task(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
 
-    active = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     estimated_time = models.FloatField(validators=[higher_than_zero])
 
@@ -49,6 +50,11 @@ class Task(models.Model):
         self.finished_by = user
         self.save()
 
+        # Get assignee work session and stop it
+        active_work_session = self.assignee_work_session
+        if active_work_session:
+            active_work_session.stop_work()
+
         return None
 
     def accept(self, user):
@@ -68,7 +74,33 @@ class Task(models.Model):
         self.assignee = user
         self.save()
 
+        # Start work session on this task
+        return self.start_work_session()
+
+    def start_work_session(self):
+        if self.finished:
+            return "Naloga je že zaključena."
+
+        if not self.assignee:
+            return "Naloga mora imeti dodeljenega uporabnika, da se lahko prične z delom."
+
+        if self.work_sessions.filter(end__isnull=True, user=self.assignee).exists():
+            return "Dela na tej nalogi že poteka."
+
+        work_session = WorkSession.objects.create(
+            start=now(),
+            user=self.assignee,
+            task=self,
+        )
+
+        if not work_session:
+            return 'Napaka pri začetku dela.'
+
         return None
+
+    @property
+    def assignee_work_session(self):
+        return self.work_sessions.filter(end__isnull=True, user=self.assignee).last()
 
     def decline(self, user):
         if self.finished:
@@ -81,6 +113,11 @@ class Task(models.Model):
         if self.assignee and self.assignee != user:
             return "Nalogo lahko zavrne le uporabnik, kateremu je bila dodeljena ({}).".format(self.assignee.username)
 
+        # Get assignee work session and stop it
+        active_work_session = self.assignee_work_session
+        if active_work_session:
+            active_work_session.stop_work()
+
         self.assignee_awaiting = None
         self.assignee = None
         self.save()
@@ -89,6 +126,8 @@ class Task(models.Model):
 
     @property
     def api_data(self):
+        active_work_session = self.assignee_work_session
+
         return dict(
             id=self.id,
             title=self.title,
@@ -96,7 +135,8 @@ class Task(models.Model):
             story_id=self.story_id,
             story_name=self.story.name,
             project_id=self.story.project_id,
-            active=self.active,
+            active=True if active_work_session else False,  # Task is active if there is any active work session
+            active_work_session=active_work_session.api_data if active_work_session else None,
             estimated_time=self.estimated_time,
             assignee=self.assignee.username if self.assignee else None,
             assignee_awaiting=self.assignee_awaiting.username if self.assignee_awaiting else None,

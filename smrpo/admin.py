@@ -1,16 +1,25 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from smrpo.models import task, project, sprint, story, post, User
+from smrpo.models import task, project, sprint, story, post, User, work_session
 
 
 @admin.register(task.Task)
 class TaskAdmin(admin.ModelAdmin):
     list_display = ('id', 'title', 'description', 'estimated_time', 'story', 'created_by', 'created', 'updated')
-    list_filter = ('active', 'finished', 'created', 'updated')
+    list_filter = ('finished', 'created', 'updated')
     raw_id_fields = ('created_by', 'finished_by')
     readonly_fields = ('created', 'updated')
     search_fields = ('title',)
+
+
+@admin.register(work_session.WorkSession)
+class WorkSessionAdmin(admin.ModelAdmin):
+    list_display = ('id', 'start', 'end', 'user', 'task', 'created', 'updated')
+    list_filter = ('start', 'end', 'created', 'updated')
+    raw_id_fields = ('task', 'user')
+    readonly_fields = ('created', 'updated')
+    search_fields = ('user__username', 'task__title')
 
 
 class ProjectSprintsInline(admin.TabularInline):
