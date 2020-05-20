@@ -1,6 +1,8 @@
+import pytz
 from django.db.models import Count, Sum
 from django.db.models.functions import Trunc
 from django.http import JsonResponse, HttpResponse
+from django.utils.timezone import now
 from rest_framework.views import APIView
 from datetime import datetime
 
@@ -41,3 +43,42 @@ class TaskWorkSessionsView(APIView):
             safe=False,
             status=400
         )
+
+    def put(self, request, task_id):
+        user = request.user
+        data = request.data
+        date = data.get('date')
+        create_work_session = False
+
+        if not date:
+            return HttpResponse('Manjkajoč datum.', status=400)
+
+        date = pytz.utc.localize(datetime.strptime(date, "%Y-%m-%d"))
+        if date > now():
+            return HttpResponse('Nalog v prihodnosti ne moreš urejati.', status=400)
+
+        try:
+            work_session = WorkSession.objects.get(task_id=task_id, user=user, date=date)
+        except WorkSession.DoesNotExist:
+            create_work_session = True
+
+        hours = data.get('hours')
+
+        if not hours:
+            return HttpResponse('Manjkajoče ure.', status=400)
+        if float(hours) < 0:
+            return HttpResponse('Ure ne smejo biti negativne.', status=400)
+
+        total_seconds = int(hours * 3600)
+        if create_work_session:
+            work_session = WorkSession.objects.create(
+                date=date,
+                total_seconds=total_seconds,
+                task_id=task_id,
+                user=user
+            )
+        else:
+            work_session.total_seconds = total_seconds
+            work_session.save()
+
+        return JsonResponse(work_session.api_data)
