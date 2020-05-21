@@ -161,7 +161,7 @@ class StartWorkTaskView(APIView):
         if WorkSession.objects.exclude(task=task).filter(active__isnull=False, user=user).exists():
             return HttpResponse("Uporabnik že dela na drugi nalogi.", status=400)
 
-        error = task.start_work_session()
+        error = task.start_work_session(user)
         if error:
             return HttpResponse(error, status=400)
 

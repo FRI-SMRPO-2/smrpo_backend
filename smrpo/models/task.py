@@ -78,15 +78,17 @@ class Task(models.Model):
         self.assignee = user
         self.save()
 
-        # Start work session on this task
-        return self.start_work_session()
+        return None
 
-    def start_work_session(self):
+    def start_work_session(self, user):
         if self.finished:
             return "Naloga je že zaključena."
 
         if not self.assignee:
             return "Naloga mora imeti dodeljenega uporabnika, da se lahko prične z delom."
+
+        if user != self.assignee:
+            return "Z delom lahko prične le uporabnik, ki je dodeljen tej nalogi. ({})".format(self.assignee.username)
 
         if self.work_sessions.filter(active__isnull=False, user=self.assignee).exists():
             return "Delo na tej nalogi že poteka."
