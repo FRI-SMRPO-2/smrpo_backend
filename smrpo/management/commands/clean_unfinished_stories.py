@@ -24,6 +24,8 @@ class Command(BaseCommand):
         updated = tasks.update(assignee_awaiting=None)
         print(f"Cleaned {updated} unfinished tasks without a sprint.")
 
+        # TODO also clear and stop work on these tasks
+
         for story in unfinished_stories:
             story.tasks.filter(assignee_awaiting__isnull=False).update(assignee_awaiting=None)
 

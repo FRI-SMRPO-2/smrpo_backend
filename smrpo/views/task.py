@@ -159,7 +159,7 @@ class StartWorkTaskView(APIView):
 
         # Check if user is already working on some task, he can only work on one task at a time
         if WorkSession.objects.exclude(task=task).filter(active__isnull=False, user=user).exists():
-            return HttpResponse("Uporabnik že dela na drugi nalogi.", status=400)
+            return HttpResponse("Uporabnik lahko na enkrat dela le na eni nalogi. Delo že poteka na drugi nalogi.", status=400)
 
         error = task.start_work_session(user)
         if error:

@@ -25,6 +25,7 @@ class Task(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
 
+    active = models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     estimated_time = models.FloatField(validators=[higher_than_zero])
 
@@ -189,7 +190,7 @@ class Task(models.Model):
             story_id=self.story_id,
             story_name=self.story.name,
             project_id=self.story.project_id,
-            active=True if active_work_session else False,  # Task is active if there is any active work session
+            active=self.active,
             active_work_session=active_work_session.api_data if active_work_session else None,
             estimated_time=self.estimated_time,
             assignee=self.assignee.username if self.assignee else None,

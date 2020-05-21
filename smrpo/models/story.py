@@ -70,14 +70,17 @@ class Story(models.Model):
 
     def get_assigned_tasks(self):
         # exclude finished, include tasks with assignee not null
-        return self.tasks.exclude(finished=True).filter(assignee__isnull=False, work_sessions__active__isnull=True).distinct()
+        return self.tasks.exclude(finished=True).filter(assignee__isnull=False, active=False)
+
+    # self.tasks.exclude(finished=True).filter(assignee__isnull=False, work_sessions__active__isnull=False).distinct()[0].work_sessions.filter(
+        # active__isnull=True)
 
     def get_finished_tasks(self):
         return self.tasks.filter(finished=True).distinct()
 
     def get_active_tasks(self):
         # exclude finished, return tasks with active work sessions
-        return self.tasks.exclude(finished=True).filter(work_sessions__active__isnull=False).distinct()
+        return self.tasks.exclude(finished=True).filter(active=True)
 
     @staticmethod
     def get_api_data(tasks):

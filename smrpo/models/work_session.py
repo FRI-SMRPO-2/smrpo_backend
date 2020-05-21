@@ -24,6 +24,9 @@ class WorkSession(models.Model):
 
     def start_work(self):
         self.active = now()
+        self.task.active = True
+        self.task.save()
+
         self.save()
         return True
 
@@ -31,6 +34,8 @@ class WorkSession(models.Model):
         seconds = (now() - self.active).total_seconds()
         self.total_seconds += seconds
         self.active = None
+        self.task.active = False
+        self.task.save()
 
         # TODO should change estimation based on this work session? subtract it?
         self.save()
