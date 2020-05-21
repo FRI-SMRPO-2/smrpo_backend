@@ -136,7 +136,7 @@ class ProjectView(APIView):
         old_users = set([project.scrum_master_id, project.product_owner_id] + list(project.developers.all().values_list('id', flat=True)))
         new_users = set([scrum_master_id, product_owner_id] + developer_ids)
         users_difference = old_users ^ new_users
-        for story in project.stories.all():
+        for story in project.stories.filter(sprint__isnull=False):
             for task in story.tasks.all():
                 task.create_work_sessions(users_difference)
 
