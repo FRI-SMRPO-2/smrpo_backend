@@ -88,8 +88,8 @@ class Task(models.Model):
         if not self.assignee:
             return "Naloga mora imeti dodeljenega uporabnika, da se lahko prične z delom."
 
-        if self.work_sessions.filter(active__isnull=True, user=self.assignee).exists():
-            return "Dela na tej nalogi že poteka."
+        if self.work_sessions.filter(active__isnull=False, user=self.assignee).exists():
+            return "Delo na tej nalogi že poteka."
 
         work_session, created = WorkSession.objects.get_or_create(
             date=now(),
