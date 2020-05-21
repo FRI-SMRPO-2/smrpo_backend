@@ -19,9 +19,7 @@ class Command(BaseCommand):
         # Only temporary
         tasks = Task.objects.filter(story__sprint__end_date__lt=now, assignee_awaiting__isnull=False)
         for task in tasks.filter(active=True):
-            task.active = False
-            task.save()
-            for ws in task.work_sessions.filter():
+            for ws in task.work_sessions.filter(active__isnull=False):
                 ws.stop_work()
 
         updated = tasks.update(assignee_awaiting=None)
