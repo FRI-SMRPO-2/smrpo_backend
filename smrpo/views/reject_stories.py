@@ -61,6 +61,7 @@ class RejectStoriesView(APIView):
 
             # remove story from sprint
             story.sprint = None
+            story.assigned_new_sprint = False
 
             # save updated story
             story.save()

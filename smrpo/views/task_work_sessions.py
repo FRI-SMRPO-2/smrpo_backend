@@ -60,6 +60,7 @@ class TaskWorkSessionsView(APIView):
         try:
             work_session = WorkSession.objects.get(task_id=task_id, user=user, date=date)
         except WorkSession.DoesNotExist:
+            # This should not happen?!
             create_work_session = True
 
         hours = data.get('hours')
@@ -71,6 +72,7 @@ class TaskWorkSessionsView(APIView):
 
         total_seconds = int(hours * 3600)
         if create_work_session:
+            # It should already exist, as it is made when task is made
             work_session = WorkSession.objects.create(
                 date=date,
                 total_seconds=total_seconds,

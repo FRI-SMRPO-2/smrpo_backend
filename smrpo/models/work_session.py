@@ -11,6 +11,7 @@ class WorkSession(models.Model):
     task = models.ForeignKey('smrpo.Task', on_delete=models.CASCADE, related_name='work_sessions')
 
     total_seconds = models.IntegerField(default=0)
+    estimated_seconds = models.IntegerField(default=0)
 
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -30,6 +31,8 @@ class WorkSession(models.Model):
         seconds = (now() - self.active).total_seconds()
         self.total_seconds += seconds
         self.active = None
+
+        # TODO should change estimation based on this work session? subtract it?
         self.save()
         return True
 
@@ -40,6 +43,7 @@ class WorkSession(models.Model):
             date=self.date,
             active=self.active,
             total_seconds=self.total_seconds,
+            estimated_seconds=self.estimated_seconds,
             user=self.user.username,
             user_id=self.user.id,
             task=self.task.title,

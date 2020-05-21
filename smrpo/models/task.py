@@ -1,5 +1,9 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.timezone import now
 
 from smrpo.models.story import Story
@@ -104,6 +108,38 @@ class Task(models.Model):
 
         return None
 
+    def create_work_sessions(self):
+        # Create WorkSessions for every sprint day for every user
+        start = self.story.sprint.start_date
+        end = self.story.sprint.end_date
+
+        while start <= end:
+            start += datetime.timedelta(days=1)
+
+            project = self.story.project
+            for user in project.developers.all():
+                WorkSession.objects.create(
+                    date=start,
+                    user=user,
+                    task=self,
+                )
+                print(user)
+
+            if not project.developers.filter(id=project.scrum_master_id).exists():
+                WorkSession.objects.create(
+                    date=start,
+                    user=project.scrum_master,
+                    task=self,
+                )
+
+            if not project.developers.filter(id=project.product_owner_id).exists() and project.product_owner != project.scrum_master:
+                WorkSession.objects.create(
+                    date=start,
+                    user=project.product_owner,
+                    task=self,
+                )
+            print(start)
+
     @property
     def active_work_session(self):
         return self.work_sessions.filter(active__isnull=False, user=self.assignee).last()
@@ -152,3 +188,10 @@ class Task(models.Model):
             created=self.created,
             updated=self.updated
         )
+
+
+# TODO check when new users are added to perform the same for them
+@receiver(post_save, sender=Task)
+def task_post_save(sender, instance, created, **kwargs):
+    if created:
+        instance.create_work_sessions()

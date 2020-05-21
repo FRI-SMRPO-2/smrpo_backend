@@ -44,6 +44,8 @@ class Story(models.Model):
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='stories')
     sprint = models.ForeignKey(Sprint, null=True, blank=True, on_delete=models.SET_NULL, related_name='stories')
+    assigned_new_sprint = models.BooleanField(default=False)
+
     priority = models.ForeignKey(StoryPriority, on_delete=models.PROTECT)
 
     unique_by_project_count_id = models.IntegerField(null=True, blank=True)
@@ -114,4 +116,12 @@ def story_post_save(sender, instance, created, **kwargs):
     if created:
         custom_id = instance.project.stories.count()
         instance.unique_by_project_count_id = custom_id
+        instance.save()
+
+    # TODO set this var somewhere, when new sprint assigned
+    if instance.assigned_new_sprint:
+        for task in instance.tasks.all():
+            task.create_work_sessions()
+
+        instance.assigned_new_sprint = False
         instance.save()

@@ -99,6 +99,7 @@ class SprintStoriesView(APIView):
 
         for story in stories:
             story.sprint = sprint
+            story.assigned_new_sprint = True
             try:
                 story.save()
             except:
