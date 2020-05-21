@@ -131,6 +131,15 @@ class ProjectView(APIView):
         if not isinstance(developer_ids, list):
             return JsonResponse({'message': 'Developers mora biti seznam'}, status=400)
 
+        # Check if there is any new user in the project, if yes, create new work sessions for these users
+        # Ugly code ahead
+        old_users = set([project.scrum_master_id, project.product_owner_id] + list(project.developers.all().values_list('id', flat=True)))
+        new_users = set([scrum_master_id, product_owner_id] + developer_ids)
+        users_difference = old_users ^ new_users
+        for story in project.stories.all():
+            for task in story.tasks.all():
+                task.create_work_sessions(users_difference)
+
         try:
             project.name = name
             project.scrum_master_id = scrum_master_id
@@ -141,6 +150,7 @@ class ProjectView(APIView):
             return HttpResponse("Napaka pri posodabljanju projekta!", status=500)
 
         return JsonResponse(project.api_data, safe=False, status=200)
+
 
 class AuthProjectUserView(APIView):
     """

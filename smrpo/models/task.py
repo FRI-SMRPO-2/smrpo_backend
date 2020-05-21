@@ -108,7 +108,7 @@ class Task(models.Model):
 
         return None
 
-    def create_work_sessions(self):
+    def create_work_sessions(self, user_ids=None):
         # Create WorkSessions for every sprint day for every user
         start = self.story.sprint.start_date
         end = self.story.sprint.end_date
@@ -117,27 +117,37 @@ class Task(models.Model):
             start += datetime.timedelta(days=1)
 
             project = self.story.project
-            for user in project.developers.all():
-                WorkSession.objects.create(
-                    date=start,
-                    user=user,
-                    task=self,
-                )
-                print(user)
 
-            if not project.developers.filter(id=project.scrum_master_id).exists():
-                WorkSession.objects.create(
-                    date=start,
-                    user=project.scrum_master,
-                    task=self,
-                )
+            if user_ids:
+                for user_id in user_ids:
+                    WorkSession.objects.create(
+                        date=start,
+                        user_id=user_id,
+                        task=self,
+                    )
+                    print(user_id)
+            else:
+                for user in project.developers.all():
+                    WorkSession.objects.create(
+                        date=start,
+                        user=user,
+                        task=self,
+                    )
+                    print(user)
 
-            if not project.developers.filter(id=project.product_owner_id).exists() and project.product_owner != project.scrum_master:
-                WorkSession.objects.create(
-                    date=start,
-                    user=project.product_owner,
-                    task=self,
-                )
+                if not project.developers.filter(id=project.scrum_master_id).exists():
+                    WorkSession.objects.create(
+                        date=start,
+                        user=project.scrum_master,
+                        task=self,
+                    )
+
+                if not project.developers.filter(id=project.product_owner_id).exists() and project.product_owner != project.scrum_master:
+                    WorkSession.objects.create(
+                        date=start,
+                        user=project.product_owner,
+                        task=self,
+                    )
             print(start)
 
     @property
