@@ -40,8 +40,7 @@ class TaskWorkSessionsView(APIView):
         return JsonResponse(
             # [t[1]/3600 for t in time_series],
             [[t[0].strftime("%Y-%m-%d"), t[1]/3600] for t in time_series],
-            safe=False,
-            status=400
+            safe=False
         )
 
     def put(self, request, task_id):
