@@ -4,10 +4,9 @@ from django.db.models.functions import Trunc
 from django.http import JsonResponse, HttpResponse
 from django.utils.timezone import now
 from rest_framework.views import APIView
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from smrpo.models.work_session import WorkSession
-import qsstats
 
 
 class TaskWorkSessionsView(APIView):
@@ -23,25 +22,28 @@ class TaskWorkSessionsView(APIView):
         work_sessions = WorkSession.objects.filter(
             task_id=task_id,
             user=user,
-            date__range=(start_date, end_date)
         )
 
-        # work_sessions.annotate(
-        #     day=Trunc('date', 'day')
-        # ).values(
-        #     'day'
-        # ).annotate(
-        #     secs=Sum('total_seconds')
-        # )
+        result = dict()
+        start_date = datetime.strptime(start_date, "%Y-%m-%d")
+        end_date = datetime.strptime(end_date, "%Y-%m-%d")
+        while start_date <= end_date:
+            ws = work_sessions.filter(date=start_date)
+            if ws:
+                ws = ws[0]
+                # result.append([ws.date.strftime("%Y-%m-%d"), ws.total_seconds/3600])
+                result[ws.date.strftime("%Y-%m-%d")] = dict(
+                    hours=ws.total_seconds / 3600,
+                    estimated_hours=ws.estimated_seconds / 3600
+                )
+            else:
+                result[start_date.strftime("%Y-%m-%d")] = dict(
+                    hours= 0.0,
+                    estimated_hours= 0.0
+                )
+            start_date += timedelta(days=1)
 
-        qss = qsstats.QuerySetStats(work_sessions, 'date', Sum('total_seconds'))
-        time_series = qss.time_series(datetime.strptime(start_date, "%Y-%m-%d"), datetime.strptime(end_date, "%Y-%m-%d"))
-
-        return JsonResponse(
-            # [t[1]/3600 for t in time_series],
-            [[t[0].strftime("%Y-%m-%d"), t[1]/3600] for t in time_series],
-            safe=False
-        )
+        return JsonResponse(result)
 
     def put(self, request, task_id):
         user = request.user

@@ -117,7 +117,6 @@ class Task(models.Model):
         end = self.story.sprint.end_date
 
         while start <= end:
-            start += datetime.timedelta(days=1)
 
             project = self.story.project
 
@@ -152,6 +151,7 @@ class Task(models.Model):
                         task=self,
                     )
             print(start)
+            start += datetime.timedelta(days=1)
 
     @property
     def active_work_session(self):
