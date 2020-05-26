@@ -140,6 +140,9 @@ class ProjectView(APIView):
             for task in story.tasks.all():
                 task.create_work_sessions(users_difference)
 
+        if Project.objects.exclude(pk=pk).filter(name=name).exists():
+            return HttpResponse("Projekt s tem imenom že obstaja!", status=400)
+
         try:
             project.name = name
             project.scrum_master_id = scrum_master_id
