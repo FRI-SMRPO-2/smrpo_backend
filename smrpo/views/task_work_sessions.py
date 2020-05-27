@@ -1,6 +1,4 @@
 import pytz
-from django.db.models import Count, Sum
-from django.db.models.functions import Trunc
 from django.http import JsonResponse, HttpResponse
 from django.utils.timezone import now
 from rest_framework.views import APIView
@@ -63,14 +61,16 @@ class TaskWorkSessionsView(APIView):
 
         hours = data.get('hours')
 
-        if not hours:
+        if hours is None:
             return HttpResponse('Manjkajoče ure.', status=400)
         if float(hours) < 0:
             return HttpResponse('Ure ne smejo biti negativne.', status=400)
 
         estimated_hours = data.get('estimated_hours')
         estimated_seconds = 0
-        if estimated_hours:
+        if estimated_hours is not None:
+            if float(estimated_hours) < 0:
+                return HttpResponse('Ocenjene ure do konca naloge ne smejo biti negativne.', status=400)
             estimated_seconds = int(estimated_hours * 3600)
         else:
             # Get estimated hours from previous work session if exists, else 0
@@ -79,16 +79,6 @@ class TaskWorkSessionsView(APIView):
                 estimated_seconds = previous.estimated_seconds
 
         total_seconds = int(hours * 3600)
-        # if create_work_session:
-        #     # It should already exist, as it is made when task is made
-        #     work_session = WorkSession.objects.create(
-        #         date=date,
-        #         total_seconds=total_seconds,
-        #         estimated_seconds=estimated_seconds,
-        #         task_id=task_id,
-        #         user=user
-        #     )
-        # else:
         work_session.total_seconds = total_seconds
         work_session.estimated_seconds = estimated_seconds
         work_session.save()
