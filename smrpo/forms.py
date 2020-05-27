@@ -8,7 +8,7 @@ from smrpo.models.task import Task
 
 class UserCreateForm(UserCreationForm):
     class Meta:
-        exclude = ['date_joined', 'password', 'is_superuser', 'is_staff']
+        exclude = ['date_joined', 'password']
         model = User
 
     def __init__(self, *args, **kwargs):
@@ -21,6 +21,8 @@ class UserCreateForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_active = True
+        if user.is_superuser:
+            user.is_staff = True
 
         if commit:
             user.save()
