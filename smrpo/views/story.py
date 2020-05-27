@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from smrpo.forms import CreateStoryForm
 from smrpo.models.project import Project
 
-from smrpo.models.story import Story
+from smrpo.models.story import Story, StoryTest
 
 
 class StoriesView(APIView):
@@ -107,6 +107,7 @@ class StoryView(APIView):
         realized = data.get('realized')
         time_complexity = data.get('time_complexity')
         priority = data.get('priority')
+        tests = data.get('tests', list())
 
         if name:
             story.name = name
@@ -135,5 +136,20 @@ class StoryView(APIView):
             story.save()
         except:
             return HttpResponse("Napaka pri posodabljanju uporabniške zgodbe!", 500)
+
+        if 'tests' in data:
+            try:
+                # delete all current tests
+                StoryTest.objects.filter(story=story).delete()
+
+                if tests is not None:
+                    # add new tests
+                    new_story_tests = []
+                    for test in tests:
+                        new_story_tests.append(StoryTest(text=test, story=story))
+
+                    StoryTest.objects.bulk_create(new_story_tests)
+            except:
+                return HttpResponse("Napaka pri posodabljanju testov!", 500)
 
         return JsonResponse(story.api_data, safe=False, status=201)
