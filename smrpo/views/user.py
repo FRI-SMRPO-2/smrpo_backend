@@ -11,8 +11,9 @@ class UsersView(APIView):
         Only superuser can access this view.
     """
     def get(self, request):
-        if not request.user.is_superuser:
-            return HttpResponse('User is forbidden to access this resource.', status=403)
+        # Scrum master is also allowed to search user when editing project
+        # if not request.user.is_superuser:
+        #    return HttpResponse('User is forbidden to access this resource.', status=403)
 
         search = request.GET.get('search')
 
