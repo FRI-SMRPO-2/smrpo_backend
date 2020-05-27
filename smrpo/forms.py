@@ -21,6 +21,8 @@ class UserCreateForm(UserCreationForm):
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_active = True
+        if user.is_superuser:
+            user.is_staff = True
 
         if commit:
             user.save()
