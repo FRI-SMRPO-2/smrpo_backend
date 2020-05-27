@@ -21,7 +21,7 @@ urlpatterns = [
     path('user/me/', AuthUserInfoView.as_view(), name="auth_user_info"),
     path('user/me/tasks', AuthUserTasksView.as_view(), name="auth_user_tasks"),
     path('user/', UsersView.as_view(), name="users"),
-    path('user/<int:user_id>/', UpdateUserView.as_view(), name="user_update"),
+    path('user/<int:user_id>/', UpdateUserView.as_view(), name="user"),
 
     # Project
     path('project/', ProjectsView.as_view(), name="projects"),

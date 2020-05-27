@@ -3,6 +3,9 @@ from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 from smrpo.forms import UserCreateForm
 from smrpo.models import User
+from smrpo.models.story import Story
+from smrpo.models.task import Task
+from smrpo.models.work_session import WorkSession
 
 
 class UsersView(APIView):
@@ -65,9 +68,27 @@ class UsersView(APIView):
 
 class UpdateUserView(APIView):
     """
-        Return a list of all users.
         Only superuser can access this view.
     """
+    def get(self, request, user_id):
+        if not request.user.is_superuser:
+            return HttpResponse('Samo administrator lahko dostopa do vseh uporabnikov.', status=403)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponse('Uporabnik, ki ga želiš urejati ne obstaja.', status=404)
+
+        return JsonResponse(dict(
+            id=user.id,
+            first_name=user.first_name,
+            last_name=user.last_name,
+            full_name=user.get_full_name(),
+            username=user.username,
+            email=user.email,
+            last_login=user.last_login,
+            is_superuser=user.is_superuser
+        ))
 
     def put(self, request, user_id):
         if not request.user.is_superuser:
@@ -76,7 +97,7 @@ class UpdateUserView(APIView):
         try:
             user = User.objects.get(id=user_id)
         except User.DoesNotExist:
-            return HttpResponse('Uporabnik, ki ga želiš urejati ne obstaja..', status=404)
+            return HttpResponse('Uporabnik, ki ga želiš urejati ne obstaja.', status=404)
 
         form = UserCreateForm(request.data, instance=user)
         if form.is_valid():
@@ -91,13 +112,33 @@ class UpdateUserView(APIView):
                 email=user.email,
                 last_login=user.last_login,
                 is_superuser=user.is_superuser
-            )
-            )
+            ))
 
         errors = dict()
         for key, error in form.errors.items():
             errors[key] = list(error)
         return JsonResponse(errors, safe=False, status=400)
+
+    def delete(self, request, user_id):
+        if not request.user.is_superuser:
+            return HttpResponse('Samo administrator sistema lahko briše račune.', status=403)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponse('Uporabnik, ki ga želiš izbrisati ne obstaja.', status=404)
+
+        Task.objects.filter(Q(assignee=user) | Q(assignee_awaiting=user)).update(
+            assignee=None,
+            assignee_awaiting=None,
+            assignee_accepted=None
+        )
+
+        WorkSession.objects.filter(user=user).delete()
+
+        user.delete()
+
+        return HttpResponse("Uporabnik je bil izbrisan.")
 
 
 class AuthUserInfoView(APIView):
