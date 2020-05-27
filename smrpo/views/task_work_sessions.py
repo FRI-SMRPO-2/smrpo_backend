@@ -31,7 +31,6 @@ class TaskWorkSessionsView(APIView):
             ws = work_sessions.filter(date=start_date)
             if ws:
                 ws = ws[0]
-                # result.append([ws.date.strftime("%Y-%m-%d"), ws.total_seconds/3600])
                 result[ws.date.strftime("%Y-%m-%d")] = dict(
                     hours=ws.total_seconds / 3600,
                     estimated_hours=ws.estimated_seconds / 3600
@@ -39,7 +38,7 @@ class TaskWorkSessionsView(APIView):
             else:
                 result[start_date.strftime("%Y-%m-%d")] = dict(
                     hours= 0.0,
-                    estimated_hours= 0.0
+                    estimated_hours=0.0
                 )
             start_date += timedelta(days=1)
 

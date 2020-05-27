@@ -82,6 +82,33 @@ class AuthUserInfoView(APIView):
             )
         )
 
+    def put(self, request):
+        """
+            Update authenticated user's data.
+        """
+        user = request.user
+
+        form = UserCreateForm(request.data, instance=user)
+        if form.is_valid():
+            user = form.save()
+
+            return JsonResponse(dict(
+                    id=user.id,
+                    first_name=user.first_name,
+                    last_name=user.last_name,
+                    full_name=user.get_full_name(),
+                    username=user.username,
+                    email=user.email,
+                    last_login=user.last_login,
+                    is_superuser=user.is_superuser
+                )
+            )
+
+        errors = dict()
+        for key, error in form.errors.items():
+            errors[key] = list(error)
+        return JsonResponse(errors, safe=False, status=400)
+
 
 class AuthUserTasksView(APIView):
     """
