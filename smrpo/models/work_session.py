@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
@@ -31,9 +33,41 @@ class WorkSession(models.Model):
         return True
 
     def stop_work(self):
-        seconds = (now() - self.active).total_seconds()
-        # TODO split work seconds between all days from start to now
-        self.total_seconds += seconds
+        n = now()
+        seconds = (n - self.active).total_seconds()
+
+        if (self.active + timedelta(seconds=seconds)).date() == self.date:
+            self.total_seconds += seconds
+        else:
+            seconds_left = seconds
+            ws = self
+            while seconds_left > 0:
+                if ws.active:
+                    remaining_seconds = ((ws.active+timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0) - ws.active).total_seconds() - ws.total_seconds
+                    ws.total_seconds += remaining_seconds
+                    seconds_left -= remaining_seconds
+                    ws.active = None
+                    ws.save()
+                    date = ws.date + timedelta(days=1)
+                    ws = self.task.work_sessions.filter(date=date).first()
+                    if not ws:
+                        break
+                    continue
+
+                if ws.total_seconds + seconds_left >= 86400:
+                    seconds_left -= ws.total_seconds
+                    ws.total_seconds = 86400
+                    ws.save()
+                else:
+                    ws.total_seconds += seconds_left
+                    ws.save()
+                    break
+
+                date = ws.date + timedelta(days=1)
+                ws = self.task.work_sessions.filter(date=date).first()
+                if not ws:
+                    break
+
         self.active = None
         self.task.active = False
         self.task.save()
