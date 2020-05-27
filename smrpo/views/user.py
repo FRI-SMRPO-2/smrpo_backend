@@ -139,7 +139,7 @@ class UpdateUserView(APIView):
 
         user.delete()
 
-        return HttpResponse("Uporabnik je bil izbrisan.")
+        return JsonResponse(dict(), status=200)
 
 
 class AuthUserInfoView(APIView):
