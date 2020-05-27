@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.forms import ModelForm
 
 from smrpo.models import User
@@ -6,9 +6,25 @@ from smrpo.models.story import Story, StoryTest
 from smrpo.models.task import Task
 
 
+class ChangeUserForm(UserChangeForm):
+    class Meta:
+        exclude = ['date_joined', 'last_login', 'is_active', 'is_staff']
+        model = User
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.is_active = True
+        if user.is_superuser:
+            user.is_staff = True
+
+        if commit:
+            user.save()
+        return user
+
+
 class UserCreateForm(UserCreationForm):
     class Meta:
-        exclude = ['date_joined', 'password']
+        exclude = ['date_joined', 'password', 'last_login']
         model = User
 
     def __init__(self, *args, **kwargs):

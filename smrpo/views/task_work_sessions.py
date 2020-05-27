@@ -48,7 +48,6 @@ class TaskWorkSessionsView(APIView):
         user = request.user
         data = request.data
         date = data.get('date')
-        # create_work_session = False
 
         if not date:
             return HttpResponse('Manjkajoč datum.', status=400)
@@ -60,8 +59,6 @@ class TaskWorkSessionsView(APIView):
         try:
             work_session = WorkSession.objects.get(task_id=task_id, user=user, date=date)
         except WorkSession.DoesNotExist:
-            # This should not happen?!
-            # create_work_session = True
             return HttpResponse('Delovna seja ne obstaja.', status=404)
 
         hours = data.get('hours')

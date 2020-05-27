@@ -32,6 +32,7 @@ class WorkSession(models.Model):
 
     def stop_work(self):
         seconds = (now() - self.active).total_seconds()
+        # TODO split work seconds between all days from start to now
         self.total_seconds += seconds
         self.active = None
         self.task.active = False

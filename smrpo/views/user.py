@@ -1,9 +1,9 @@
+from django.contrib.auth.forms import SetPasswordForm, PasswordChangeForm
 from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
-from smrpo.forms import UserCreateForm
+from smrpo.forms import UserCreateForm, ChangeUserForm
 from smrpo.models import User
-from smrpo.models.story import Story
 from smrpo.models.task import Task
 from smrpo.models.work_session import WorkSession
 
@@ -100,7 +100,7 @@ class UpdateUserView(APIView):
         except User.DoesNotExist:
             return HttpResponse('Uporabnik, ki ga želiš urejati ne obstaja.', status=404)
 
-        form = UserCreateForm(request.data, instance=user)
+        form = ChangeUserForm(request.data, instance=user)
         if form.is_valid():
             user = form.save()
 
@@ -167,8 +167,20 @@ class AuthUserInfoView(APIView):
         """
         user = request.user
 
-        form = UserCreateForm(request.data, instance=user)
+        form = ChangeUserForm(request.data, instance=user)
         if form.is_valid():
+            pw1 = request.data.get('password1')
+            pw2 = request.data.get('password2')
+            if pw1 or pw2:
+                pass_form = SetPasswordForm(user=user, data=dict(new_password1=pw1, new_password2=pw2))
+                if pass_form.is_valid():
+                    pass_form.save()
+                else:
+                    errors = dict()
+                    for key, error in pass_form.errors.items():
+                        errors[key] = list(error)
+                    return JsonResponse(errors, safe=False, status=400)
+
             user = form.save()
 
             return JsonResponse(dict(
