@@ -12,7 +12,7 @@ from smrpo.views.story import StoriesView, StoryView
 from smrpo.views.task import StoryTasksView, FinishTaskView, AcceptTaskView, DeclineTaskView, StartWorkTaskView, StopWorkTaskView
 from smrpo.views.task_work_sessions import TaskWorkSessionsView
 from smrpo.views.token_authentication import TokenAuthenticationView
-from smrpo.views.user import UsersView, AuthUserInfoView, AuthUserTasksView
+from smrpo.views.user import UsersView, AuthUserInfoView, AuthUserTasksView, UpdateUserView
 
 urlpatterns = [
     path('auth', TokenAuthenticationView.as_view(), name='api_token_auth'),
@@ -21,6 +21,7 @@ urlpatterns = [
     path('user/me/', AuthUserInfoView.as_view(), name="auth_user_info"),
     path('user/me/tasks', AuthUserTasksView.as_view(), name="auth_user_tasks"),
     path('user/', UsersView.as_view(), name="users"),
+    path('user/<int:user_id>/', UpdateUserView.as_view(), name="user_update"),
 
     # Project
     path('project/', ProjectsView.as_view(), name="projects"),

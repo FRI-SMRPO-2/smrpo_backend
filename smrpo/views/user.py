@@ -12,7 +12,7 @@ class UsersView(APIView):
     """
     def get(self, request):
         if not request.user.is_superuser:
-            return HttpResponse('User is forbidden to access this resource.', status=403)
+            return HttpResponse('Samo administrator lahko dostopa do vseh uporabnikov.', status=403)
 
         search = request.GET.get('search')
 
@@ -37,7 +37,7 @@ class UsersView(APIView):
 
     def post(self, request):
         if not request.user.is_superuser:
-            return HttpResponse('User is forbidden to access this resource.', status=403)
+            return HttpResponse('Samo administrator lahko ustvarja nove račune.', status=403)
 
         form = UserCreateForm(request.data)
         if form.is_valid():
@@ -61,6 +61,43 @@ class UsersView(APIView):
             errors[key] = list(error)
 
         return JsonResponse(errors, status=400)
+
+
+class UpdateUserView(APIView):
+    """
+        Return a list of all users.
+        Only superuser can access this view.
+    """
+
+    def put(self, request, user_id):
+        if not request.user.is_superuser:
+            return HttpResponse('Samo administrator sistema lahko ureja račune.', status=403)
+
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return HttpResponse('Uporabnik, ki ga želiš urejati ne obstaja..', status=404)
+
+        form = UserCreateForm(request.data, instance=user)
+        if form.is_valid():
+            user = form.save()
+
+            return JsonResponse(dict(
+                id=user.id,
+                first_name=user.first_name,
+                last_name=user.last_name,
+                full_name=user.get_full_name(),
+                username=user.username,
+                email=user.email,
+                last_login=user.last_login,
+                is_superuser=user.is_superuser
+            )
+            )
+
+        errors = dict()
+        for key, error in form.errors.items():
+            errors[key] = list(error)
+        return JsonResponse(errors, safe=False, status=400)
 
 
 class AuthUserInfoView(APIView):
