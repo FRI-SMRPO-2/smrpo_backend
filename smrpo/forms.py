@@ -13,10 +13,9 @@ class ChangeUserForm(UserChangeForm):
 
     def __init__(self, *args, **kwargs):
         self.exclude_is_superuser = kwargs.pop('exclude_is_superuser', None)
-        if self.exclude_is_superuser:
-            self.exclude.append('is_superuser')
-
         super(ChangeUserForm, self).__init__(*args, **kwargs)
+        if self.exclude_is_superuser:
+            self.fields.pop('is_superuser')
 
     def save(self, commit=True):
         user = super().save(commit=False)

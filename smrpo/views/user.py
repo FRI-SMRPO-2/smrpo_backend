@@ -179,7 +179,7 @@ class AuthUserInfoView(APIView):
         """
         user = request.user
 
-        form = ChangeUserForm(request.data, instance=user)
+        form = ChangeUserForm(request.data, exclude_is_superuser=True, instance=user)
         if form.is_valid():
             pw1 = request.data.get('password1')
             pw2 = request.data.get('password2')
