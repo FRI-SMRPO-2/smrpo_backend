@@ -56,7 +56,7 @@ def sprint_pre_save(sender, instance, *args, **kwargs):
     start = instance.start_date
     end = instance.end_date
 
-    if start < timezone.now().date():
+    if start < timezone.now().date() and instance.pk is None:
         raise ValueError('Začetni datum ne sme biti v preteklosti.')
 
     if not start <= end:

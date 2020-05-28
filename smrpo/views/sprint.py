@@ -117,9 +117,6 @@ class SprintView(APIView):
         # get sprint
         sprint = get_object_or_404(Sprint, pk=sprint_id, project_id=project_id)
 
-        if sprint.start_date <= timezone.now().date():
-            return HttpResponse("Sprint je v teku ali se je že končal!", status=400)
-
         start_date = data.get('start_date')
         end_date = data.get('end_date')
         expected_speed = data.get('expected_speed')
@@ -134,6 +131,14 @@ class SprintView(APIView):
             expected_speed = float(data.get('expected_speed'))
         except:
             return JsonResponse({'message': 'Eno od polj je v napačnem formatu.'}, status=400)
+
+        if sprint.end_date < timezone.now().date():
+            return JsonResponse({'message': 'Sprint je že končan.'}, status=400)
+
+        if sprint.start_date <= timezone.now().date() and (
+                sprint.start_date != start_date or sprint.end_date != end_date):
+            return JsonResponse({'message': 'Sprememba datuma je dovoljena samo za sprinte, ki se še niso pričeli.'},
+                                status=400)
 
         # update sprint
         try:
