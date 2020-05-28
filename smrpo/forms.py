@@ -11,9 +11,17 @@ class ChangeUserForm(UserChangeForm):
         exclude = ['date_joined', 'last_login', 'is_active', 'is_staff']
         model = User
 
+    def __init__(self, *args, **kwargs):
+        self.exclude_is_superuser = kwargs.pop('exclude_is_superuser', None)
+        if self.exclude_is_superuser:
+            self.exclude.append('is_superuser')
+
+        super(ChangeUserForm, self).__init__(*args, **kwargs)
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.is_active = True
+
         if user.is_superuser:
             user.is_staff = True
 
