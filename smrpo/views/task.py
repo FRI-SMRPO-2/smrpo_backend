@@ -158,7 +158,8 @@ class StartWorkTaskView(APIView):
             return HttpResponse("Naloga ne obstaja ali pa uporabnik ni določen za delo na njej.", status=404)
 
         # Check if user is already working on some task, he can only work on one task at a time
-        if WorkSession.objects.exclude(task=task).filter(active__isnull=False, user=user).exists():
+        # TODO Filter only in the same project
+        if WorkSession.objects.exclude(task=task).filter(project=task.sprint.project, active__isnull=False, user=user).exists():
             return HttpResponse("Uporabnik lahko na enkrat dela le na eni nalogi. Delo že poteka na drugi nalogi.", status=400)
 
         error = task.start_work_session(user)
