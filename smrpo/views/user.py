@@ -102,6 +102,18 @@ class UpdateUserView(APIView):
 
         form = ChangeUserForm(request.data, instance=user)
         if form.is_valid():
+            pw1 = request.data.get('password1')
+            pw2 = request.data.get('password2')
+            if pw1 or pw2:
+                pass_form = SetPasswordForm(user=user, data=dict(new_password1=pw1, new_password2=pw2))
+                if pass_form.is_valid():
+                    pass_form.save()
+                else:
+                    errors = dict()
+                    for key, error in pass_form.errors.items():
+                        errors[key] = list(error)
+                    return JsonResponse(errors, safe=False, status=400)
+
             user = form.save()
 
             return JsonResponse(dict(

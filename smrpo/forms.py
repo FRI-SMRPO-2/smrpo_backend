@@ -90,3 +90,30 @@ class CreateTaskForm(ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class UpdateTaskForm(ModelForm):
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description', 'estimated_time', 'assignee_awaiting']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTaskForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(UpdateTaskForm, self).save(commit=False)
+
+        if commit:
+            instance.save()
+        return instance
+
+
+class UpdateTaskTitleForm(ModelForm):
+
+    class Meta:
+        model = Task
+        fields = ['title', 'description']
+
+    def __init__(self, *args, **kwargs):
+        super(UpdateTaskTitleForm, self).__init__(*args, **kwargs)

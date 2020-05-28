@@ -2,7 +2,7 @@ from django.db.models import Q
 from django.http import JsonResponse, HttpResponse
 from rest_framework.views import APIView
 
-from smrpo.forms import CreateTaskForm
+from smrpo.forms import CreateTaskForm, UpdateTaskForm, UpdateTaskTitleForm
 from smrpo.models.project import Project
 from smrpo.models.story import Story
 from smrpo.models.task import Task
@@ -21,7 +21,7 @@ class StoryTasksView(APIView):
 
         try:
             story = Story.objects.get(pk=story_id)
-        except Project.DoesNotExist:
+        except Story.DoesNotExist:
             return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
 
         if not story.sprint or not story.sprint.is_active:
@@ -37,7 +37,7 @@ class StoryTasksView(APIView):
                     status=403
                 )
 
-        if data.get('estimated_time'):
+        if data.get('estimated_time') is not None:
             try:
                 if data.get('estimated_time') <= 0:
                     return HttpResponse('Časovna zahtevnost naloge mora biti večja od 0 ur.', status=400)
@@ -68,6 +68,60 @@ class StoryTasksView(APIView):
         if form.is_valid():
             task = form.save()
             return JsonResponse(task.api_data, status=201)
+
+        errors = dict()
+        for key, error in form.errors.items():
+            errors[key] = list(error)
+        return JsonResponse(errors, safe=False, status=400)
+
+
+class UpdateTaskView(APIView):
+
+    """
+        Only scrum master or developers or super user can create new tasks.
+    """
+    def put(self, request, task_id):
+        user = request.user
+        data = request.data
+
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
+
+        if not user.is_superuser:
+            if not (task.story.sprint.project.scrum_master == user or not task.story.sprint.project.developers.filter(pk=user.id).exists()):
+                return HttpResponse('Samo skrbnik metodlogije, člani razvojne skupine ali administrator lahko urejajo naloge.', status=403)
+
+        if task.assignee:
+            # Can edit only title
+            form = UpdateTaskTitleForm(data, instance=task)
+            if form.is_valid():
+                task = form.save()
+                return JsonResponse(task.api_data, status=200)
+        else:
+            if data.get('estimated_time') is not None:
+                try:
+                    if data.get('estimated_time') <= 0:
+                        return HttpResponse('Časovna zahtevnost naloge mora biti večja od 0 ur.', status=400)
+                    if data.get('estimated_time') > 200:
+                        return HttpResponse('Časovna zahtevnost naloge ne sme biti večja od 200 ur.', status=400)
+                except:
+                    return HttpResponse('Časovna zahtevnost naloge mora biti med 0 in 200 ur.', status=400)
+
+            # If assignee awaiting is current user, then make assignee accepted
+            asignee_awaiting_id = data.get('assignee_awaiting_id')
+            if asignee_awaiting_id:
+                if Project.objects.filter(pk=task.story.sprint.project_id, developers=asignee_awaiting_id).exists():
+                    data['assignee_awaiting'] = asignee_awaiting_id
+                else:
+                    return HttpResponse('Izbrani član, kateremu je bila dodeljena naloga, ni del razvojne ekipe.', 400)
+
+            form = UpdateTaskForm(data, instance=task)
+
+            if form.is_valid():
+                task = form.save()
+                return JsonResponse(task.api_data, status=200)
 
         errors = dict()
         for key, error in form.errors.items():
