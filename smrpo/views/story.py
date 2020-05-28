@@ -96,9 +96,11 @@ class StoryView(APIView):
         except Story.DoesNotExist:
             return HttpResponse("Uporabniška zgodba s tem ID-jem ne obstaja", status=404)
 
-        # story must not belong to any sprint
         if story.sprint is not None:
-            return HttpResponse("Uporabniška zgodba je del sprinta!", status=400)
+            return HttpResponse("Urejaš lahko le zgodbe, ki niso v sprintu.", status=400)
+
+        if story.realized:
+            return HttpResponse("Urejaš lahko le nerealizirane zgodbe.", status=400)
 
         data = request.data
         name = data.get('name')
@@ -109,20 +111,29 @@ class StoryView(APIView):
         priority = data.get('priority')
         tests = data.get('tests', list())
 
-        if name:
-            story.name = name
+        if not name:
+            return HttpResponse("Ime zgodbe ne sme biti prazno.", status=400)
+        story.name = name
 
-        if text:
-            story.text = text
+        if not text:
+            return HttpResponse("Opis zgodbe ne sme biti prazen.", status=400)
+        story.text = text
 
-        if business_value:
-            story.business_value = business_value
+        if business_value is None:
+            return HttpResponse("Poslovna vrednost zgodbe ne sme biti prazna.", status=400)
+        if business_value <= 0:
+            return HttpResponse("Poslovna vrednost zgodbe mora biti večja od 0.", status=400)
+        if business_value > 10:
+            return HttpResponse("Poslovna vrednost zgodbe mora biti manjša od 10.", status=400)
+
+        story.business_value = business_value
+
+        if not priority:
+            return HttpResponse("Prioriteta zgodbe ne sme biti prazna.", status=400)
+        story.priority_id = priority
 
         if realized:
             story.realized = realized
-
-        if priority:
-            story.priority_id = priority
 
         # is not None - because 0 is equal to false in Python
         if time_complexity is not None:
@@ -153,3 +164,31 @@ class StoryView(APIView):
                 return HttpResponse("Napaka pri posodabljanju testov!", 500)
 
         return JsonResponse(story.api_data, safe=False, status=201)
+
+    def delete(self, request, project_id, story_id):
+        user = request.user
+
+        try:
+            project = Project.objects.get(pk=project_id)
+        except Project.DoesNotExist:
+            return HttpResponse('Projekt s tem ID-jem ne obstaja', status=404)
+
+        if not user.is_superuser:
+            is_developer = project.developers.all().filter(pk=user.api_data()['id']).exists()
+            if not (project.product_owner == user or project.scrum_master == user or is_developer):
+                return HttpResponse('User is forbidden to access this resource.', status=403)
+
+        # check if story exists in project
+        try:
+            story = Story.objects.filter(project_id=project_id).get(pk=story_id)
+        except Story.DoesNotExist:
+            return HttpResponse("Uporabniška zgodba s tem ID-jem ne obstaja", status=404)
+
+        if story.sprint is not None:
+            return HttpResponse("Urejaš lahko le zgodbe, ki niso v sprintu.", status=400)
+
+        if story.realized:
+            return HttpResponse("Urejaš lahko le nerealizirane zgodbe.", status=400)
+
+        story.delete()
+        return JsonResponse({})
