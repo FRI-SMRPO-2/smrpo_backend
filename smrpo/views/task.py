@@ -22,7 +22,7 @@ class StoryTasksView(APIView):
         try:
             story = Story.objects.get(pk=story_id)
         except Story.DoesNotExist:
-            return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
+            return HttpResponse('Naloga s tem ID-jem ne obstaja', 404)
 
         if not story.sprint or not story.sprint.is_active:
             return HttpResponse('Nalogo lahko dodaš le zgodbi aktivnega sprinta.', 400)
@@ -87,7 +87,7 @@ class UpdateTaskView(APIView):
         try:
             task = Task.objects.get(pk=task_id)
         except Task.DoesNotExist:
-            return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
+            return HttpResponse('Naloga s tem ID-jem ne obstaja', 404)
 
         if not user.is_superuser:
             if not (task.story.sprint.project.scrum_master == user or not task.story.sprint.project.developers.filter(pk=user.id).exists()):
@@ -127,6 +127,25 @@ class UpdateTaskView(APIView):
         for key, error in form.errors.items():
             errors[key] = list(error)
         return JsonResponse(errors, safe=False, status=400)
+
+    def delete(self, request, task_id):
+        user = request.user
+
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse('Zgodba s tem ID-jem ne obstaja', 404)
+
+        if not user.is_superuser:
+            if not (task.story.sprint.project.scrum_master == user or not task.story.sprint.project.developers.filter(pk=user.id).exists()):
+                return HttpResponse('Samo skrbnik metodlogije, člani razvojne skupine ali administrator lahko brišejo naloge.', status=403)
+
+        if task.assignee:
+            return HttpResponse('Naloga je že dodeljena članu, zato je ni mogoče izbrisati.', 400)
+
+        task.work_sessions.all().delete()
+        task.delete()
+        return JsonResponse({}, status=200)
 
 
 class FinishTaskView(APIView):
