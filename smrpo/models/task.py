@@ -116,6 +116,7 @@ class Task(models.Model):
         start = self.story.sprint.start_date
         end = self.story.sprint.end_date
 
+        estimated_seconds = self.estimated_time * 3600
         while start <= end:
 
             project = self.story.project
@@ -126,6 +127,7 @@ class Task(models.Model):
                         date=start,
                         user_id=user_id,
                         task=self,
+                        estimated_seconds=estimated_seconds
                     )
                     print(user_id)
             else:
@@ -134,6 +136,7 @@ class Task(models.Model):
                         date=start,
                         user=user,
                         task=self,
+                        estimated_seconds=estimated_seconds
                     )
                     print(user)
 
@@ -142,6 +145,7 @@ class Task(models.Model):
                         date=start,
                         user=project.scrum_master,
                         task=self,
+                        estimated_seconds=estimated_seconds
                     )
 
                 if not project.developers.filter(id=project.product_owner_id).exists() and project.product_owner != project.scrum_master:
@@ -149,6 +153,7 @@ class Task(models.Model):
                         date=start,
                         user=project.product_owner,
                         task=self,
+                        estimated_seconds=estimated_seconds
                     )
             print(start)
             start += datetime.timedelta(days=1)
